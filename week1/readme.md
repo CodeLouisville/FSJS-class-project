@@ -9,6 +9,18 @@
 ## Start a project
 
 ## Sample project organization
+When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
+.
+├── index.js          // Entry point
+├── package.json
+└── src
+    ├── config        // application configuration
+    │   └── index.js
+    ├── models        // Database models
+    │   └── index.js
+    ├── routes        // HTTP(S) routing/controllers
+    │   └── index.js
+    └── server.js     // Set up server and listen on port
 
 ## require() is a big deal
 Yes it is.  The full documentation for require() (really, for Node modules in general) can be found [here (https://nodejs.org/api/modules.html)](https://nodejs.org/api/modules.html).
@@ -31,8 +43,11 @@ You will see (and create) a lot of `index.js` files in your Node lifetime.  The 
 
 When you pass the name of a directory to `require()`, it will specifically seek out a file in that directory named `index.js` (if it doesn't find one, it looks for index.node, but that's a story for another time)
 
+
 ### So this can be confusing.
 Your text editor may have half a dozen open tabs - all with the name `index.js`. That's annoying, but the `index.js` naming convention is there for good reason and it is an important aspect of nodejs development.
+
+Remember, you don't HAVE to have an `index.js` file in a directory, but you should know how Node treats that file if you do.
 
 A couple of suggestions:
 - Learn to pay attention to the names of directories as much as you pay attention to the names of files
