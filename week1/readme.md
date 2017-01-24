@@ -7,10 +7,17 @@
 - [Linux (http://blog.teamtreehouse.com/install-node-js-npm-linux)](http://blog.teamtreehouse.com/install-node-js-npm-linux)
 
 ## Start a project
+Starting a project in node is simple:
+```
+mkdir my_awesome_project
+cd my_awesome_project
+npm init
+```
+
+`npm init` simply creates a `package.json` file a populates it with the answers to some questions.  You can edit it in a text editor.
 
 ## Sample project organization
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
-```
 .
 ├── index.js          // Entry point
 ├── package.json
@@ -22,7 +29,15 @@ When starting a project, a good practice is to lay out your directory structure 
     ├── routes        // HTTP(S) routing/controllers
     │   └── index.js
     └── server.js     // Set up server and listen on port
+
+## Add a library
+Perhaps the primary use of `npm` is to add packages to your project.  We're going to add the 'E' of 'MEAN' to our project right now:
+
 ```
+npm install express --save
+```
+
+This tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
 
 ## require() is a big deal
 Yes it is.  The full documentation for require() (really, for Node modules in general) can be found [here (https://nodejs.org/api/modules.html)](https://nodejs.org/api/modules.html).
