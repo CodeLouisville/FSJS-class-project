@@ -18,6 +18,7 @@ npm init
 
 ## Sample project organization
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
+```
 .
 ├── index.js          // Entry point
 ├── package.json
@@ -29,6 +30,7 @@ When starting a project, a good practice is to lay out your directory structure 
     ├── routes        // HTTP(S) routing/controllers
     │   └── index.js
     └── server.js     // Set up server and listen on port
+```
 
 ## Add a library
 Perhaps the primary use of `npm` is to add packages to your project.  We're going to add the 'E' of 'MEAN' to our project right now:
