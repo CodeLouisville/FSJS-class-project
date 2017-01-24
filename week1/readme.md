@@ -10,6 +10,7 @@
 
 ## Sample project organization
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
+```
 .
 ├── index.js          // Entry point
 ├── package.json
@@ -21,6 +22,7 @@ When starting a project, a good practice is to lay out your directory structure 
     ├── routes        // HTTP(S) routing/controllers
     │   └── index.js
     └── server.js     // Set up server and listen on port
+```
 
 ## require() is a big deal
 Yes it is.  The full documentation for require() (really, for Node modules in general) can be found [here (https://nodejs.org/api/modules.html)](https://nodejs.org/api/modules.html).
