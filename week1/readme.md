@@ -54,7 +54,7 @@ For comparison: in a browser environment, if you want to make content from multi
 var myRandomObject = require('./myFile');
 
 // myFile.js
-exports = {some: {random: ['object']}};
+module.exports = {some: {random: ['object']}};
 ```
 
 ### What's with all these index.js files
