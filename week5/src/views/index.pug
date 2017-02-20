@@ -1,0 +1,13 @@
+doctype html
+html(ng-app="fileListApp")
+	head
+		link(rel="stylesheet", href="/css/style.css")
+		script(src="/node_modules/angular/angular.min.js")
+		script(src="/node_modules/jquery/dist/jquery.min.js")
+		title= title
+		script(src="/js/module/app.module.js")
+		script(src="/js/module/file-list.module.js")
+		script(src="/js/component/file-list.component.js")
+	body
+		h1= message
+		file-list
