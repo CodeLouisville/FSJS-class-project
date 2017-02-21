@@ -155,11 +155,14 @@ Strategy: On startup, check if there are any files in the database, if not, then
 
 3. Add the seed data
     ```javascript
+    if (count > 0) return ;
+    
     const files = require('./file.seed.json');
     File.create(files, function(err, newFiles) {
       if (err) {
         throw err;
       }
+      console.log("DB seeded")
     });
     ```
     **Model.create:** http://mongoosejs.com/docs/api.html#model_Model.create
