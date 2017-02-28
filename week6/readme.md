@@ -205,7 +205,7 @@
           }
 
           file.title = updatedFile.title;
-          file.filename = updatedFile.fileName;
+          file.filename = updatedFile.filename;
 
           file.save(function(err, file) {
             if (err) {
