@@ -1,4 +1,4 @@
-# FSJS Week 6 - You had me at "update" & You delete me.
+# FSJS Week 6 - You had me at update/You delete me.
 
 **Outline**
 
