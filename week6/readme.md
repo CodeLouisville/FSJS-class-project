@@ -1,8 +1,8 @@
-# FSJS Week 5 - Mongo!!!!
+# FSJS Week 6 - You had me at "update" & You delete me.
 
 **Outline**
 
-1. Set up for week5
+1. Set up for week6
 3. Create a form to edit files
 2. Create the Update endpoint and connect it to the front-end
 2. Create the Delete endpoint and connect it to the front-end
