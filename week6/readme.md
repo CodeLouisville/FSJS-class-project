@@ -155,6 +155,8 @@
 
 3. Copy our existing `GET` controller from `src/routes/index.js` and export it from `file.controller.js`
     ```javascript
+    const mongoose = require('mongoose');
+
     module.exports = {
       // List all files in the database
       list: function(req, res, next) {
