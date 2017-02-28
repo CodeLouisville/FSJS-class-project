@@ -78,7 +78,7 @@
     <li
       ng-repeat="file in $ctrl.files"
       ng-click="$ctrl.selectFile(file)"
-      ng-class="{selected: file === $ctrl.selectedFile}">
+      ng-class="{selected: file._id === $ctrl.selectedFile._id}">
       <h2>{{file.title}}</h2>
       <p>{{file.filename}}</p>
     </li>
