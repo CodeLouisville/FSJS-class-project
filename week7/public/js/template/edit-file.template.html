@@ -1,0 +1,15 @@
+<h4 ng-show="$ctrl.file._id">Editing: {{$ctrl.file.title}}</h4>
+<h4 ng-show="!$ctrl.file._id">New File</h4>
+
+<fieldset>
+<div>
+    <label>Title: <input ng-model="$ctrl.file.title" /></label>
+</div>
+<div>
+    <label>Filename: <input ng-model="$ctrl.file.filename" /></label>
+</div>
+<div>
+    <button ng-click="$ctrl.save($ctrl.file)">Update File</button>
+    <button ng-click="$ctrl.deleteFile($ctrl.file)">Delete</button>
+</div>
+</fieldset>

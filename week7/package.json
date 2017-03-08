@@ -1,0 +1,25 @@
+{
+  "name": "cl_project",
+  "version": "1.0.0",
+  "description": "This is a sample node project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "code",
+    "louisville",
+    "sample",
+    "project"
+  ],
+  "author": "Aaron W. Johnson",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.6.1",
+    "body-parser": "^1.16.0",
+    "express": "^4.14.0",
+    "jquery": "^3.1.1",
+    "mongoose": "^4.8.4",
+    "pug": "^2.0.0-beta10"
+  }
+}
