@@ -28,6 +28,7 @@ router.get('/tester', function(req, res, next) {
 
 router.get('/files', fileController.list);
 router.post('/files', fileController.create);
+router.get('/files/:fileId', fileController.get);
 router.put('/files/:fileId', fileController.update);
 router.delete('/files/:fileId', fileController.delete);
 
@@ -58,8 +59,10 @@ router.delete('/files/:fileId', fileController.delete);
 
 router.get('/', (req,res) => {
   res.render('index',
-    {title: 'This is the title',
-    message: 'We survived week 3'});
+    {
+      title: 'This is the title',
+      message: 'We survived week 3'
+    });
 });
 
 router.use(function(req, res, next) {

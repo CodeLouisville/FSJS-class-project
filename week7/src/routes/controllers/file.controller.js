@@ -14,6 +14,19 @@ module.exports = {
     });
   },
 
+  // Get a single file
+  get: function(req, res, next) {
+    const fileId = req.params.fileId;
+    mongoose.model('File').findById(fileId, function(err, file) {
+      if (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+
+      res.json(file);
+    });
+  },
+
   // Create a file
   create: function(req, res, next) {
     const newFile = req.body.file;

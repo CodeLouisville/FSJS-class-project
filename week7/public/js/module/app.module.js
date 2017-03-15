@@ -1,1 +1,5 @@
-angular.module("fileListApp",["fileList"]);
+angular.module("fileListApp", [
+    "ngRoute",
+    "fileList",
+    "fileDetail"
+]);

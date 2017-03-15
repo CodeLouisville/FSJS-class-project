@@ -1,10 +1,11 @@
+<h1>Welcome to the <em>END GAME</em></h1>
+
 <ul>
   <li
     ng-repeat="file in $ctrl.files"
     ng-click="$ctrl.selectFile(file)"
     ng-class="{selected: file._id === $ctrl.selectedFile._id}">
-    <h2>{{file.title}}</h2>
-    <p>{{file.filename}}</p>
+    <a href="#!/files/{{file._id}}">{{file.title}}</a>
   </li>
 </ul>
 

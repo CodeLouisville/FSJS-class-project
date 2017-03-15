@@ -1,0 +1,10 @@
+<h2>{{$ctrl.file.title}}</h2>
+<p>{{$ctrl.file.filename}}</p>
+
+<button ng-click="$ctrl.edit()">Edit File</button>
+
+<edit-file
+  ng-show="$ctrl.editFile"
+  file="$ctrl.editFile"
+  on-delete="$ctrl.onDelete(file)"
+  on-update="$ctrl.onUpdate(file)"></edit-file>
