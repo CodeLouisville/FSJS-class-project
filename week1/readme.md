@@ -1,12 +1,12 @@
 # FSJS Week 1 - Our Glorious Node Project
 
-*Outline*
+**Outline**
 
 * Install NodeJS
 * Set up the project
 * npm init
 * Install core packages
-* Directory structure
+* Organize the project
 * "Hello World" web server
 
 ## Install NodeJS
@@ -27,17 +27,11 @@ cd FSJS-class-project
 rm -rf week1
 ```
 
-3. Make a new, empty `week1` folder
-```
-mkdir week1
-cd week1
-```
-
 ## Start a project with `npm init`
 Starting a project in node is simple:
 ```
-mkdir my_awesome_project
-cd my_awesome_project
+mkdir week1
+cd week1
 npm init
 ```
 
@@ -55,14 +49,13 @@ npm install express --save
 Now, go back to `package.json` and look at the 'dependencies' section.
 Also, a new directory has appeared: `node_modules`
 
-This tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
+The above command tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
 
 
-## Sample project organization
+## Organize this thing
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
 ```
 .
-├── index.js          // Entry point
 ├── package.json
 └── src
     ├── config        // application configuration
@@ -72,13 +65,6 @@ When starting a project, a good practice is to lay out your directory structure 
     ├── routes        // HTTP(S) routing/controllers
     │   └── index.js
     └── server.js     // Set up server and listen on port
-```
-
-## Add a library
-Perhaps the primary use of `npm` is to add packages to your project.  We're going to add the 'E' of 'MEAN' to our project right now:
-
-```
-npm install express --save
 ```
 
 ## Hello World
@@ -129,7 +115,7 @@ node src/server.js
 
 Test it out by going to `http://localhost:3030` in your browser.
 
-Now, mix it up a bit.  Put this code *BEFORE* the other `app.use` bit.
+Now, mix it up a bit.  Put this code **BEFORE** the other `app.use` bit.
 ```javascript
 app.use('/doc', function(req, res, next) {
   res.end(`Documentation http://expressjs.com/`);
