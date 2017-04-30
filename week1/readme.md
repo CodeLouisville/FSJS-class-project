@@ -1,4 +1,13 @@
-# FSJS Project Week 1
+# FSJS Week 1 - Our Glorious Node Project
+
+*Outline*
+
+* Install NodeJS
+* Set up the project
+* npm init
+* Install core packages
+* Directory structure
+* "Hello World" web server
 
 ## Install NodeJS
 
@@ -6,7 +15,25 @@
 - [Mac (http://blog.teamtreehouse.com/install-node-js-npm-mac)](http://blog.teamtreehouse.com/install-node-js-npm-mac)
 - [Linux (http://blog.teamtreehouse.com/install-node-js-npm-linux)](http://blog.teamtreehouse.com/install-node-js-npm-linux)
 
-## Start a project
+## Set up the project
+1. Clone the project
+```
+git clone https://github.com/CodeLouisville/FSJS-class-project.git
+cd FSJS-class-project
+```
+
+2. Get rid of `week1` (we're going to rebuild it)
+```
+rm -rf week1
+```
+
+3. Make a new, empty `week1` folder
+```
+mkdir week1
+cd week1
+```
+
+## Start a project with `npm init`
 Starting a project in node is simple:
 ```
 mkdir my_awesome_project
@@ -15,6 +42,21 @@ npm init
 ```
 
 `npm init` simply creates a `package.json` file a populates it with the answers to some questions.  You can edit it in a text editor.
+
+
+## Install code packages
+
+First, take a look at `package.json`, then run this command:
+
+```
+npm install express --save
+```
+
+Now, go back to `package.json` and look at the 'dependencies' section.
+Also, a new directory has appeared: `node_modules`
+
+This tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
+
 
 ## Sample project organization
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
@@ -39,9 +81,67 @@ Perhaps the primary use of `npm` is to add packages to your project.  We're goin
 npm install express --save
 ```
 
-This tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
+## Hello World
 
-## require() is a big deal
+Open `src/config/index.js`
+```javascript
+// src/config/index.js
+
+module.exports = {
+  appName: 'Our Glorious Node Project',
+  port: 3030
+}
+```
+
+Open `src/server.js`
+Pull in some needed modules
+```javascript
+// src/server.js
+
+const express = require('express');
+const config = require('./config');
+```
+
+Create our application object
+```javascript
+const app = express();
+```
+
+Tell it what to do
+```javascript
+app.use(function(req, res, next) {
+  res.end("Hello World!");
+});
+```
+
+Start the server
+```javascript
+app.listen(config.port, function() {
+  console.log(`${config.appName} is listening on port ${config.port}`);
+});
+```
+
+On the command line:
+```
+node src/server.js
+```
+
+
+Test it out by going to `http://localhost:3030` in your browser.
+
+Now, mix it up a bit.  Put this code *BEFORE* the other `app.use` bit.
+```javascript
+app.use('/doc', function(req, res, next) {
+  res.end(`Documentation http://expressjs.com/`);
+});
+```
+
+Visit `http://localhost:3030/doc`
+Move the `/doc` route below the original `app.use` code and refresh.  What happened?
+
+## Bonus material
+
+### require() is a big deal
 Yes it is.  The full documentation for require() (really, for Node modules in general) can be found [here (https://nodejs.org/api/modules.html)](https://nodejs.org/api/modules.html).
 
 `require()` is what allows you to organize your code in to easy-to-understand (hopefully) directories and files, but join them all together in to a single application.
@@ -67,14 +167,3 @@ When you pass the name of a directory to `require()`, it will specifically seek 
 Your text editor may have half a dozen open tabs - all with the name `index.js`. That's annoying, but the `index.js` naming convention is there for good reason and it is an important aspect of nodejs development.
 
 Remember, you don't HAVE to have an `index.js` file in a directory, but you should know how Node treats that file if you do.
-
-A couple of suggestions:
-- Learn to pay attention to the names of directories as much as you pay attention to the names of files
-- Add a comment at the top of the file that tells you where you are.  For example:
-```javascript
-// some/directory/index.js
-```
-or
-```javascript
-// yet/another/directory/index.js
-```

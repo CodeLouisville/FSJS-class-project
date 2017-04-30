@@ -1,4 +1,6 @@
+// src/config/index.js
 
-const config = {
-  appName: 'My awesome app'
+module.exports = {
+  appName: 'Our Glorious Node Project',
+  port: 3030
 }
