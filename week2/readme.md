@@ -33,7 +33,7 @@ npm install
 ## Serve a static page
 1. Create a "public" directory inside the `src` directory
 ```
-mkdir src/public
+mkdir public
 ```
 
 2. Set up our express application to serve static files.
