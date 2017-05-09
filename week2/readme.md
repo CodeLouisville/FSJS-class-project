@@ -37,7 +37,7 @@ mkdir public
 ```
 
 2. Set up our express application to serve static files.
-Add a reference to Node's `path` module to the top of the page
+Add a reference to Node's `path` module to the top of the page in the `server.js`
 ```javascript
 const path = require('path');
 ```
