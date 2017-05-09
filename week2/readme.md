@@ -5,8 +5,6 @@
 * Set up the project
 * Serve a static page
 * Add a template engine
-* Organize the project
-* "Hello World" web server
 
 
 ## Set up the project
