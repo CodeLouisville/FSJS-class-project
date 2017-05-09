@@ -45,7 +45,7 @@ const path = require('path');
 
 Then add the following line to `server.js` BEFORE any routes
 ```javascript
-const publicPath = path.resolve(__dirname, '../public');
+const publicPath = path.resolve(__dirname, './public');
 app.use(express.static(publicPath));
 ```
 [[Documentation for Node Modules (dirname)](https://nodejs.org/api/modules.html)]
