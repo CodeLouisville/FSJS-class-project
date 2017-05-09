@@ -25,6 +25,11 @@ cp -R week1 week2
 cd week2
 ```
 
+4. Install dependencies
+```
+npm install
+```
+
 ## Serve a static page
 1. Create a "public" directory inside the `src` directory
 ```
