@@ -16,7 +16,7 @@ cd FSJS-class-project
 
 2. Get rid of `week2` (we're going to rebuild it)
 ```
-rm -rf week1
+rm -rf week2
 ```
 
 3. Copy `week1` to `week2`
