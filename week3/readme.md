@@ -66,13 +66,14 @@ npm start
 Now, when we make changes to files, the server restarts automatically.  Try it out!
 
 ## The 5 Operations of CRUD
+
 | Operation | Suggested HTTP | Data |
-| --- | --- |
+| --- | --- | --- |
 | Create | POST | Create a new element |
 | Read   | GET  | Get a single element |
 | Update | PUT  | Replace an element with new data |
 | Delete | DELETE | Delete a single element |
-| (list) | GET  | Get an array of elements |
+| List | GET  | Get an array of elements |
 
 1. Do a little clean-up by moving our endpoints to a separate file.  Add the following to `routes/index.js`
 ```javascript
@@ -103,7 +104,7 @@ app.use(express.static(publicPath));
 app.use('/api', router);
 ```
 
-What does the `'/api'` part do? [`app.use() Documentation here](https://expressjs.com/en/4x/api.html#app.use).  Basically, this prepends `/api` to all the paths defined in `router` (currently, we only have `/doc`). So, instead of making a GET request to `/doc`, we will now make a request to `/api/doc`.
+What does the `'/api'` part do? [`app.use()` Documentation here](https://expressjs.com/en/4x/api.html#app.use).  Basically, this prepends `/api` to all the paths defined in `router` (currently, we only have `/doc`). So, instead of making a GET request to `/doc`, we will now make a request to `/api/doc`.
 
 **Fire up postman and try it**
 
