@@ -3,9 +3,8 @@
 **Outline**
 
 * Set up the project
-* Grab some DevTools
-* The 5 operation of CRUD (list, detail, create, update, delete)
-* Send mock, static data as response
+* Render data from the server on our page
+* Add POST and PUT endpoints
 
 
 ## Set up the project
