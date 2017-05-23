@@ -15,6 +15,7 @@
   "author": "Aaron W. Johnson",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "express": "^4.14.0"
   }
 }
