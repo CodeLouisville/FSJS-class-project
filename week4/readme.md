@@ -1,80 +1,253 @@
-# FSJS Project Week 1
+# FSJS Week 4 - The Full Stackey
 
-## Install NodeJS
+**Outline**
 
-- [Windows (http://blog.teamtreehouse.com/install-node-js-npm-windows)](http://blog.teamtreehouse.com/install-node-js-npm-windows)
-- [Mac (http://blog.teamtreehouse.com/install-node-js-npm-mac)](http://blog.teamtreehouse.com/install-node-js-npm-mac)
-- [Linux (http://blog.teamtreehouse.com/install-node-js-npm-linux)](http://blog.teamtreehouse.com/install-node-js-npm-linux)
+* Set up the project
+* Grab some DevTools
+* The 5 operation of CRUD (list, detail, create, update, delete)
+* Send mock, static data as response
 
-## Start a project
-Starting a project in node is simple:
+
+## Set up the project
+1. (optional) Clone the project
 ```
-mkdir my_awesome_project
-cd my_awesome_project
-npm init
-```
-
-`npm init` simply creates a `package.json` file a populates it with the answers to some questions.  You can edit it in a text editor.
-
-## Sample project organization
-When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
-```
-.
-├── index.js          // Entry point
-├── package.json
-└── src
-    ├── config        // application configuration
-    │   └── index.js
-    ├── models        // Database models
-    │   └── index.js
-    ├── routes        // HTTP(S) routing/controllers
-    │   └── index.js
-    └── server.js     // Set up server and listen on port
+git clone https://github.com/CodeLouisville/FSJS-class-project.git
+cd FSJS-class-project
 ```
 
-## Add a library
-Perhaps the primary use of `npm` is to add packages to your project.  We're going to add the 'E' of 'MEAN' to our project right now:
-
+**OR** if you need to ditch your current changes and pull a fresh copy down, try this:
 ```
-npm install express --save
+git stash
+git pull
 ```
 
-This tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
+2. Get rid of `week4` (we're going to rebuild it)
+```
+rm -rf week4
+```
 
-## require() is a big deal
-Yes it is.  The full documentation for require() (really, for Node modules in general) can be found [here (https://nodejs.org/api/modules.html)](https://nodejs.org/api/modules.html).
+3. Copy `week3` to `week4`
+```
+cp -R week3 week4
+cd week4
+```
 
-`require()` is what allows you to organize your code in to easy-to-understand (hopefully) directories and files, but join them all together in to a single application.
+4. Install dependencies
+```
+npm install
+```
 
-For comparison: in a browser environment, if you want to make content from multiple file available to the larger application you can 1) concatenate them all in to one file or 2) load them individually via a `<script>` tag.  Then, the objects or functions in the file need to be made available by putting them in the global scope (which is `window` in a browser) or be added to some global object (like, say, `jQuery` via a plugin);
+## Render data from the server
+We have a nice API endpoint to spit out data (albeit static data from an array).  Let's use that in our front-end.  
 
-`require()` serves that purpose on the server side by reading the contents of the file you specify, executing it, and making whatever you export available.
+1. Create a new file in a new directory: `public\js\app.js`.
+(We could continue to put all our javascript in `script` tags in `index.html`, but placing this code in a separate file will help keep things neat and organized)
+
+2. Load this in to our `index.html`.  At the bottom of the file, just below the `script` tag that loads the handlebars library, add:
+```html
+<script src="/js/app.js"></script>
+```
+
+3. Update our handlebars template to render a file and not a BTVS character list.  Replace the `#list-template` script in `index.html` with the following:
+```html
+<script id="list-template" type="text/x-handlebars-template">
+  <ul class="list-group">
+    {{#each files}}
+    <li class="list-group-item">
+      <strong>{{title}}</strong> - {{description}}
+    </li>
+    {{/each}}
+  </ul>
+</script>
+```
+While we're at it, we can let's delete the code that rendered our previous test data. (If you want to keep it around for reference, just comment it out.)
+
+4. In `app.js`, create a function to get the file list:
 ```javascript
-// index.js
-var myRandomObject = require('./myFile');
-
-// myFile.js
-exports = {some: {random: ['object']}};
+function getFiles() {
+  return $.ajax('/api/file')
+    .then(res => {
+      console.log("Results from getFiles()", res);
+      return res;
+    })
+    .fail(err => {
+      console.log("Error in getFiles()", err);
+      throw err;
+    });
+}
 ```
 
-### What's with all these index.js files
-You will see (and create) a lot of `index.js` files in your Node lifetime.  The reason for this has to do with how `require()` behaves.
-
-When you pass the name of a directory to `require()`, it will specifically seek out a file in that directory named `index.js` (if it doesn't find one, it looks for index.node, but that's a story for another time)
-
-
-### So this can be confusing.
-Your text editor may have half a dozen open tabs - all with the name `index.js`. That's annoying, but the `index.js` naming convention is there for good reason and it is an important aspect of nodejs development.
-
-Remember, you don't HAVE to have an `index.js` file in a directory, but you should know how Node treats that file if you do.
-
-A couple of suggestions:
-- Learn to pay attention to the names of directories as much as you pay attention to the names of files
-- Add a comment at the top of the file that tells you where you are.  For example:
+5. Create a function to refresh the list
 ```javascript
-// some/directory/index.js
+function refreshFileList() {
+  const template = $('#list-template').html();
+  const compiledTemplate = Handlebars.compile(template);
+
+  getFiles()
+    .then(files => {
+      const data = {files: files};
+      const html = compiledTemplate(data);
+      $('#list-container').html(html);
+    })
+}
 ```
-or
+Test it out by refreshing the page, opening a debugging console, and typing `refreshFileList()`;
+
+6. Refresh the list automatically when the page first loads by adding  `refreshFileList()` to the remaining `$().ready()` function in `index.html`
+
+## A Form for all Seasons
+To create or edit a resource, we'll need a form.  Let's create one and drop it in `public/index.html` right below our `.list-container`:
+```html
+```
+
+###
+
+
+
+### Postman
+
+Postman allows you to send HTTP requests to your API.  You can tailor the url, method, payload, querystring, and headers.  This is a very powerful API testing tool which will make our development easier.
+
+[[Download here](https://www.getpostman.com/docs/postman/launching_postman/installation_and_updates)]
+
+### Nodemon
+
+Tired of restarting your Node server every time you change a file? Hand getting a cramp from hitting `ctrl-c` after every typo fix? **You're in luck**
+
+Enter: Nodemon - Monitor for any changes in your node.js application and automatically restart the server - perfect for development.
+
+```
+npm install nodemon -g
+```
+
+Here, we're NOT using the `--save` switch, but we are using the mysterious `-g`.  `-g` tells npm to install Nodemon globally (so it will be available for all your projects).  Therefore, we don't need to save it to our `package.json` file.
+
+Next, add a script to `package.json`.  Find the `scripts` section and replace it with the following:
 ```javascript
-// yet/another/directory/index.js
+"scripts": {
+  "start": "nodemon index.js"
+},
 ```
+[[Documentation on NPM scripts](https://docs.npmjs.com/misc/scripts)]
+
+To start our server, type:
+```
+npm start
+```
+
+Now, when we make changes to files, the server restarts automatically.  Try it out!
+
+## The 5 Operations of CRUD
+
+| Operation | Suggested HTTP | Data |
+| --- | --- | --- |
+| Create | POST | Create a new element |
+| Read   | GET  | Get a single element |
+| Update | PUT  | Replace an element with new data |
+| Delete | DELETE | Delete a single element |
+| List | GET  | Get an array of elements |
+
+1. Do a little clean-up by moving our endpoints to a separate file.  Add the following to `routes/index.js`
+```javascript
+// src/routes/index.js
+const router = require('express').Router();
+```
+[[ExpressJS Router documentation](https://expressjs.com/en/4x/api.html#router)]
+
+A router object allows us to create an isolated bundle of endpoints and middleware.  This is not new functionality, just a convenient way to package code in to separate, easy-to-read and easy-to-maintain files.
+
+Now, move our existing routes over from `server.js`:
+```javascript
+router.use('/doc', function(req, res, next) {
+  res.end(`Documentation http://expressjs.com/`);
+});
+
+module.exports = router;
+```
+(Note that our "Hello world" route is unnecessary since we are serving a static index.html)
+
+Now, head back to `server.js` and make sure our app knows how to use the router.  Create a variable for our router at the top of the file:
+```javascript
+const router = require('./routes');
+```
+And then direct our app to use the router AFTER the line where we handle static files:
+```javascript
+app.use(express.static(publicPath));
+app.use('/api', router);
+```
+
+What does the `'/api'` part do? [`app.use()` Documentation here](https://expressjs.com/en/4x/api.html#app.use).  Basically, this prepends `/api` to all the paths defined in `router` (currently, we only have `/doc`). So, instead of making a GET request to `/doc`, we will now make a request to `/api/doc`.
+
+**Fire up postman and try it**
+
+2. Add some basic **List** and **Create** handlers to `routes\index.js`:
+```javascript
+router.get('/file', function(req, res, next) {
+  res.end('List all files');
+});
+
+router.post('/file', function(req, res, next) {
+  res.end('Create a new file');
+});
+```
+[[Documentation for router.get() and router.post()](https://expressjs.com/en/4x/api.html#router.METHOD)]
+
+Head over to postman and test it out.
+
+3. Add **Update**, **Delete**, and **Read** endpoints - all of which take a route parameter:
+```javascript
+router.put('/file/:fileId', function(req, res, next) {
+  res.end(`Updating file '${req.params.fileId}'`);
+});
+
+router.delete('/file/:fileId', function(req, res, next) {
+  res.end(`Deleting file '${req.params.fileId}'`);
+});
+
+router.get('/file/:fileId', function(req, res, next) {
+  res.end(`Reading file '${req.params.fileId}'`);
+});
+```
+[[Documentation for Route Parameters](https://expressjs.com/en/guide/routing.html#route-parameters)]
+
+Route parameters allow you to pass information to the router via the url itself.  When express finds a route parameter (indicated by `:<parameter name>`), it creates a property on `req.params` with the same name.
+
+## Return some data
+
+1. Let's add a static array of "file" object for testing purposes.  Near the top of the `routes/index.js` file, add the following:
+```javascript
+const FILES = [
+  {id: 'a', title: 'cutecat1.jpg', description: 'A cute cat'},
+  {id: 'b', title: 'uglycat1.jpg', description: 'Just kidding, all cats are cute'},
+  {id: 'c', title: 'total_recall_poster.jpg', description: 'Quaid, start the reactor...'},
+  {id: 'd', title: 'louisville_coffee.txt', description: 'Coffee shop ratings'},
+];
+```
+
+2. Return the entire list as JSON.  Replace the handler for `GET /file`, with:
+```javascript
+router.get('/file', function(req, res, next) {
+  res.json(FILES);
+});
+```
+[[Documentation for res.json()](https://expressjs.com/en/4x/api.html#res.json)]
+
+`res.json()` accepts any type of data, stringifies with `JSON.stringify()` and sends the response with the header `Content-Type: application/json`.
+
+3. Return a single element by replacing the handler for `GET /file/:fileId` with:
+```javascript
+router.get('/file/:fileId', function(req, res, next) {
+  const {fileId} = req.params;
+  // same as 'const fileId = req.params.fileId'
+
+  const file = FILES.find(entry => entry.id === fileId);
+  if (!file) {
+    return res.status(404).end(`Could not find file '${fileId}'`);
+  }
+
+  res.json(file);
+});
+```
+[[Documentation for object destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#Object_destructuring)]
+[[Documentation for Array.prototype.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find?v=example)]
+[[Documentation for res.status()](https://expressjs.com/en/4x/api.html#res.status)]
