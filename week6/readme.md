@@ -51,7 +51,7 @@ npm install
 ## 2. Create a form
 
 
-1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Make the first two lines of the `<body>` look like this:
+1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Open `public/index.html` and make the first two lines of the `<body>` look like this:
   ```html
   <div class="container">
     <h1>A wild webpage appears...</h1>
@@ -60,6 +60,11 @@ npm install
   ```
 
 2. Add a button that calls a function when clicked below the file list.
+  ```html
+  <button id="add-file-button" class="btn btn-primary">Add File</button>
+  ```
+  
+3. We need that button to do something when we click it.  Add an `onclick` handler:
   ```html
   <button id="add-file-button" class="btn btn-primary" onclick="toggleAddFileForm()">Add File</button>
   ```
@@ -123,16 +128,23 @@ npm install
   }
   ```
 
-  At this point, we should have 4 simple functions that barely do anything. Let's change that by collecting the form data when we click `submit`;
+  At this point, we should have 4 more simple functions in `public/js/app.js` that barely do anything. Let's change that by collecting the form data when we click `submit`:
 
 8. Add the following to our `submitFileForm` function after the `console.log` line:
   ```javascript
-  const fileData = {
-    title: $('#file-title').val(),
-    description: $('#file-description').val(),
-  };
-  console.log("Your file data", fileData);
-  ```
+ function submitFileForm() {
+   console.log("You clicked 'submit'. Congratulations.");
+
+   const title = $('#file-title').val();
+   const description = $('#file-description').val();
+   const fileData = {
+     title: title,
+     description: description,
+   };
+
+   console.log("Your file data", fileData);
+ }
+ ```
 
 ## jQuery, our POSTing hero
 
@@ -152,7 +164,7 @@ First, we'll use jquery to POST the data, then we'll fix our POST route.
     .done(function(response) {
       console.log("We have posted the data");
       refreshFileList();
-      toggleAddFileForm();
+      toggleAddFileFormVisibility();
     })
     .fail(function(error) {
       console.log("Failures at posting, we are", error);
