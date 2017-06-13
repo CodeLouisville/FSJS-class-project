@@ -30,14 +30,14 @@ git stash
 git pull
 ```
 
-2. Get rid of `week4` (we're going to rebuild it)
+2. Get rid of `week5` (we're going to rebuild it)
 ```
-rm -rf week4
+rm -rf week5
 ```
 
-3. Copy `week3` to `week4`
+3. Copy `week4` to `week5`
 ```
-cp -R week3 week4
+cp -R week4 week5
 cd week4
 ```
 
