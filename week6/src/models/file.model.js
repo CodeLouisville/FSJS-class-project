@@ -1,19 +1,22 @@
+// Load mongoose package
 const mongoose = require('mongoose');
 
 const FileSchema = new mongoose.Schema({
-  filename: String,
   title: String,
-  updated_at: { type: Date, default: Date.now },
+  description: String,
+  created_at: { type: Date, default: Date.now },
 });
 
-const File = mongoose.model('File', FileSchema);
 
-// Seed the database if empty
+const File = mongoose.model('File', FileSchema);
+module.exports = File;
+
+
 File.count({}, function(err, count) {
   if (err) {
     throw err;
   }
-
+  
   if (count > 0) return ;
 
   const files = require('./file.seed.json');
@@ -21,7 +24,6 @@ File.count({}, function(err, count) {
     if (err) {
       throw err;
     }
+    console.log("DB seeded")
   });
 });
-
-module.exports = File

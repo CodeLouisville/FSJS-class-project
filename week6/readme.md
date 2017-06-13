@@ -1,304 +1,185 @@
-# FSJS Week 6 - You had me at update/You delete me.
+# FSJS Week 6 - Something from Nothing
 
 **Outline**
 
 1. Set up for week6
-3. Create a form to edit files
-2. Create the Update endpoint and connect it to the front-end
-2. Create the Delete endpoint and connect it to the front-end
+2. Create a hidable form to add files
+4. Client-side function to POST a new files
+5. Server-side handler that creates file
 
 
 ## 1. Setup Project
-1. Get the latest version of the group project
-    ```
-    git clone https://github.com/CodeLouisville/FSJS-class-project.git
-    ```
+1. (optional) Clone the project
+```
+git clone https://github.com/CodeLouisville/FSJS-class-project.git
+cd FSJS-class-project
+```
 
-    or if you already have a clone repository
-    ```
-    git pull
-    ```
+  **OR** if you need to ditch your current changes and pull a fresh copy down, try this:
+  ```
+  git stash
+  git pull
+  ```
 
-1. Remove `week6` (because we are going to recreate it today) and copy `week5` to `week6`
-    ```
-    rm -rf week6
-    cp -r week5 week6
-    cd week6
-    ```
+2. Get rid of `week6` (we're going to rebuild it)
+```
+rm -rf week6
+```
 
-3. Install packages
-    ```
-    npm install
-    ```
+3. Copy `week5` to `week6`
+```
+cp -R week5 week6
+cd week6
+```
 
-5. Start application
-    ```
-    node index.js
-    ```
+4. Install dependencies
+```
+npm install
+```
 
+## 2. Create a form
 
-## Create a form
+**Strategy:** We want a button that reads `Add File`.  When we click on this button, a blank form appears.  The form has fields for `title` and `description` fields, a `Submit` and a `Cancel` button.  The `Submit` and `Cancel` buttons do exactly what you think they would do.  Clicking the `Add File` button while the form is open has the same effect as clicking `Cancel.`
 
-### Give our Angular app the ability to select an active file
-1. Edit `public/js/template/file-list.template.html` so that each repeated `<li>` element has a click-handlers.  The directive to use is `ng-click="$ctrl.selectFile(file)"`.  The `<li>` element should look like:
-    ```html
-    <li ng-repeat="file in $ctrl.files" ng-click="$ctrl.selectFile(file)">
-      <h2>{{file.title}}</h2>
-      <p>{{file.filename}}</p>
-    </li>
-    ```
-    **ng-click:** https://docs.angularjs.org/api/ng/directive/ngClick
+1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Make the first two lines of the `<body>` look like this:
+  ```html
+  <div class="container">
+    <h1>A wild webpage appears...</h1>
+    <div id="list-container"></div>
+  </div>
+  ```
 
-2. Add a small function in our component (`public/js/component/file-list.component.js`) to output the passed argument:
-    ```javascript
-    this.selectFile = (file) => {
-      console.log("I GOT A FILE!!!!", file);
-    }
-    ```
+2. Add a button that calls a function when clicked below the file list.
+  ```html
+  <button id="add-file-button" class="btn btn-primary" onclick="toggleAddFileForm()">Add File</button>
+  ```
 
-3. Reload the page, open a console window (`cmd-opt-I` or `ctrl-shift-I`), and click on a few files to test;
+3.  What's that `toggleAddFileForm()` function? We have to create it.  Add the following code to the file we created to house our code: `public/js/app.js`.
+  ```javascript
+  function toggleAddFileForm() {
+    console.log("Baby steps...");
+  }
+  ```
+  Refresh the page, open a console, and click the button a few times.
 
-4. Alter the function to unselect any currently selected file, and select the current file.
-    ```javascript
-    this.selectFile = (file) => {
-      // get the currently selected file and set the `selected`
-      // property to false
-      const currentlySelected = this.selectedFile;
-      this.selectedFile = null;
+4. Add a section of HTML that will appear and disappear on command.  Add this below the `Add File` button.
+  ```html
+  <div id="form-container" class="panel hidden">
+    Really...someone should put a form here...
+  </div>
+  ```
+  If you refresh the page, nothing will appear because of bootstrap's `.hidden` class.
 
-      // Mark the passed file as selected
-      if (!currentlySelected || currentlySelected._id !== file._id) {
-        this.selectedFile = angular.copy(file);
-      }
-    }
-    ```
+5. Create a javascript function to toggle the visibility of the form container:
+  ```javascript
+  function toggleAddFileFormVisibility() {
+    $('#form-container').toggleClass('hidden');
+  }
+  ```
 
-5. When a file is selected, we want its list item to change appearance.  We'll do that by adding a class to the `<li>` element with the following directive: `ng-class="{selected: file === $ctrl.selectedFile}"`
-    ```html
-    <li
-      ng-repeat="file in $ctrl.files"
-      ng-click="$ctrl.selectFile(file)"
-      ng-class="{selected: file._id === $ctrl.selectedFile._id}">
-      <h2>{{file.title}}</h2>
-      <p>{{file.filename}}</p>
-    </li>
-    ```
-    And update our css file `public/css/style.css`:
-    ```css
-    li {
-    	cursor: pointer;
-    }
-    li.selected {
-    	background-color: pink
-    }
-    ```
-    **ng-class:** https://docs.angularjs.org/api/ng/directive/ngClass
+  And call that function within `toggleAddFileForm()`
+  ```javascript
+  function toggleAddFileForm() {
+    console.log("Baby steps...");
+    toggleAddFileFormVisibility();
+  }
+  ```
 
-### Create a form that shows the selected file
-1. Create a section that only shows up when a file is selected.
-    ```html
-    <!-- public/js/template/file-list.template.html -->
-    <div ng-show="$ctrl.selectedFile">
-      <h4>Editing: {{$ctrl.selectedFile.title}}</h4>
+6. Now insert a form into the `#form-container`
+  ```html
+  <form id="add-file-form">
+    <div class="form-group">
+      <label for="file-title">Title</label>
+      <input type="text" class="form-control" id="file-title" placeholder="Title">
     </div>
-    ```
-    **ng-show:** https://docs.angularjs.org/api/ng/directive/ngShow
-
-2. Reload and click around.
-
-3. Add a form:
-    ```html
-    <div ng-show="$ctrl.selectedFile">
-      <h4>Editing: {{$ctrl.selectedFile.title}}</h4>
-      <fieldset>
-        <div>
-          <label>Title: <input ng-model="$ctrl.selectedFile.title" /></label>
-        </div>
-        <div>
-          <label>Filename: <input ng-model="$ctrl.selectedFile.filename" /></label>
-        </div>
-        <div>
-          <button ng-click="$ctrl.updateFile($ctrl.selectedFile)">Update File</button>
-          <button ng-click="$ctrl.deleteFile($ctrl.selectedFile)">Delete</button>
-        </div>
-      </fieldset>
+    <div class="form-group">
+      <label for="file-description">Description</label>
+      <input type="text" class="form-control" id="file-description" placeholder="Description">
     </div>
-    ```
-    **ng-model:** https://docs.angularjs.org/api/ng/directive/ngModel
+    <button type="button" onclick="submitFileForm()" class="btn btn-success">Submit</button>
+    <button type="button" onclick="cancelFileForm()" class="btn btn-link">cancel</button>
+  </form>
+  ```
+  Reload the browser and look at our beautiful form.  
 
-4. Create a stub of a 'submit' form in our component:
-    ```javascript
-    this.updateFile = (file) => {
-      console.log("I am PUT-ing", file);
-    }
+7. What about those `onclick` functions?  We already know what 'cancel' should do (close the form), but will figure out what `submit` does later.
+  ```javascript
+  function submitFileForm() {
+    console.log("You clicked 'submit'. Congratulations.");
+  }
 
-    this.deleteFile = (file) => {
-      console.log("I am DELETE-ing", file);
-    }
-    ```
+  function cancelFileForm() {
+    toggleAddFileFormVisibility();
+  }
+  ```
 
-5. Reload and test
+  At this point, we should have 4 simple functions that barely do anything. Let's change that by collecting the form data when we click `submit`;
 
-## Create the update endpoints
+8. Add the following to our `submitFileForm` function after the `console.log` line:
+  ```javascript
+  const fileData = {
+    title: $('#file-title').val(),
+    description: $('#file-description').val(),
+  };
+  console.log("Your file data", fileData);
+  ```
 
-### Create the controller
+## jQuery, our POSTing hero
 
-1. Create a directory under routes: `src/routes/controllers`:
-    ```
-    mkdir src/routes/controllers
-    ```
+We're going to POST json-formatted data to an endpoint on our server which will do all the hard work.  We already have a `POST /api/file` route, but currently it appends the file data to a static array (remember?  We never changed that).
 
-2. Create a file for our controllers
-    ```
-    touch src/routes/controllers/file.controller.js
-    ```
+First, we'll use jquery to POST the data, then we'll fix our POST route.
 
-3. Copy our existing `GET` controller from `src/routes/index.js` and export it from `file.controller.js`
-    ```javascript
-    const mongoose = require('mongoose');
+1. Add the following to our `submitFileForm` function AFTER we create the fileData object.
+  ```javascript
+  $.ajax({
+    type: "POST",
+    url: '/api/file',
+    data: JSON.stringify(fileData),
+    dataType: 'json',
+    contentType : 'application/json',
+  })
+    .done(function(response) {
+      console.log("We have posted the data");
+      refreshFileList();
+      toggleAddFileForm();
+    })
+    .fail(function(error) {
+      console.log("Failures at posting, we are", error);
+    });
+  ```
+  [Documentation for jquery AJAX](https://api.jquery.com/jquery.ajax/)
+  If we refresh the page and test this, it will work, but we won't be updating the displayed list. Remember that we have that static array thing which we've never changed...let's do that now.
 
-    module.exports = {
-      // List all files in the database
-      list: function(req, res, next) {
-        mongoose.model('File').find(function(err, files) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
 
-          res.json(files);
-        });
-      },
-    }
-    ```
-    **The Module Object:** https://nodejs.org/api/modules.html#modules_the_module_object
+## Now, fix the POST route handler
 
-4. Import our controller and use that in the route:
-    ```javascript
-    const fileController = require('./controllers/file.controller');
-    //...
-    router.get('/files', fileController.list);
-    ```
+1. Open the file `src/routes/index.js` and delete everything in our `POST /file` handler.  It should look like this when we're done:
+  ```javascript
+  router.post('/file', function(req, res, next) {
 
-5. Restart the server and test that you can still list files
+  });
+  ```
 
-6. Create a route in `/src/routes/index.js` that handles `PUT` requests, and use an currently-not-existing controller:
-    ```javascript
-    router.put('/files/:fileId', fileController.update);
-    ```
+2. Instead of appending to an array, we will use our mongoose model to insert a new "File" in to the database.  Change the `POST /file` handler to the following:
+  ```javascript
+  router.post('/file', function(req, res, next) {
+    const File = mongoose.model('File');
+    const fileData = {
+      title: req.body.title,
+      description: req.body.description,
+    };
 
-7. Now create the `update` controller in `/src/routes/controllers/file.controller.js`
-    ```javascript
-    module.exports = {
-
-      // ...
-
-      // Update a file
-      update: function(req, res, next) {
-        const fileId = req.params.fileId;
-        const updatedFile = req.body.file;
-
-        mongoose.model('File').findById(fileId, function(err, file) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
-
-          file.title = updatedFile.title;
-          file.filename = updatedFile.filename;
-
-          file.save(function(err, file) {
-            if (err) {
-              console.log(err);
-              res.status(500).json(err);
-            }
-
-            res.json(file);
-          });
-        });
-      },
-    }
-    ```
-    **Model.findById():** http://mongoosejs.com/docs/api.html#model_Model.findById
-
-### Hook up the front-end to the back end
-1. First, move the bit of code which was responsible for getting the list of files in to its own function, so that it can be called whenever needed.  Also, make sure to call that function right after creation.
-    ```javascript
-    this.getFiles = () => {
-      return $http.get("/files").then(function(response){
-        return self.files=response.data;
-      });
-    }
-    this.getFiles();
-    ```
-
-2. In `public/js/component/file-list.component.js`, replace the `updateFile` stub with the following code:
-    ```javascript
-    this.updateFile = (file) => {
-
-      $http.put(`/files/${file._id}`, {file})
-        .then(response => {
-          console.log("Successfully updated file");
-          return this.getFiles();
-        })
-        .catch(err => {
-          console.log("Oops...there was an error", err);
-        })
-    }
-    ```
-    **$http.put:** https://docs.angularjs.org/api/ng/service/$http#put
-
-3. Restart server, reload page and test
-
-## Create the delete endpoints
-
-### Create the controller
-1. Go back to `src/routes/index` and add the following route:
-    ```javascript
-    router.delete('/files/:fileId', fileController.delete);
-    ```
-
-2. Create the controller in `/src/routes/controllers/file.controller.js`
-    ```javascript
-    {
-
-      // ...
-
-      // Delete a file
-      delete: function(req, res, next) {
-        const fileId = req.params.fileId;
-
-        mongoose.model('File').findById(fileId, function(err, file) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
-
-          file.remove(function(err, file) {
-            if (err) {
-              console.log(err);
-              res.status(500).json(err);
-            }
-
-            res.json(file);
-          })
-        })
+    File.create(fileData, function(err, newFile) {
+      if (err) {
+        console.log(err);
+        return res.status(500).json(err);
       }
-    }
-    ```
-    **Document.remove():** http://mongoosejs.com/docs/api.html#model_Model-remove
 
-3. In `public/js/component/file-list.component.js`, replace the `deleteFile` stub with the following code:
-    ```javascript
-    this.deleteFile = (file) => {
-      $http.delete(`/files/${file._id}`)
-        .then(response => {
-          console.log("Successfully deleted file");
-          this.selectedFile = null;
-          return this.getFiles();
-        })
-        .catch(err => {
-          console.log("Drat...there was an error", err);
-        })
-    }
-    ```
+      res.json(newFile);
+    });
+  });
+  ```
+  [Documentation for mongoose Model.create](http://mongoosejs.com/docs/api.html#model_Model.create)
+
+  Restart the server, go back to our website and add a new File.  Our list of files should update.  We can reload the page and/or restart the server and we will still have our newly added file in the list.

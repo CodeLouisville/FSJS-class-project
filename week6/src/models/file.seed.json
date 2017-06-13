@@ -1,5 +1,5 @@
 [
-  {"filename": "file1.jpg", "title":"Mongo file 1"},
-  {"filename": "file2.jpg", "title":"Mongo file 2"},
-  {"filename": "file3.jpg", "title":"Mongo file 3"}
+  {"title":"Satellite of Love Plans.svg", "description": "Includes fix for exhaust port vulnerability" },
+  {"title":"Rules of Cribbage.doc", "description": "9th edition" },
+  {"title":"avengers_fanfic.txt", "description": "PRIVATE DO NOT READ" }
 ]
