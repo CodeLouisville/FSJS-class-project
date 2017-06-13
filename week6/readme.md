@@ -37,9 +37,19 @@ cd week6
 npm install
 ```
 
+**Strategy:** 
+* A User will visit the site and see a button that reads `Add File`.  
+* Clicking on this button will cause a blank form (previously not visible) to appear.  
+* Our user will use that form to add a new File to the database.  
+* The form has fields for `title` and `description` fields, a `Submit` and a `Cancel` button.  
+* The `Submit` and `Cancel` buttons do exactly what you think they would do.  
+ * The `Submit` button will trigger a javascript function that grabs the data from the form and POSTs it to an API endpoint (we already have one...remember it?)
+ * After POSTing the data and receiving a response, the page will refresh the list of Files.
+ * The `Cancel` button will close the form without POSTing the data
+* Clicking the `Add File` button while the form is open has the same effect as clicking `Cancel.`
+
 ## 2. Create a form
 
-**Strategy:** We want a button that reads `Add File`.  When we click on this button, a blank form appears.  The form has fields for `title` and `description` fields, a `Submit` and a `Cancel` button.  The `Submit` and `Cancel` buttons do exactly what you think they would do.  Clicking the `Add File` button while the form is open has the same effect as clicking `Cancel.`
 
 1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Make the first two lines of the `<body>` look like this:
   ```html
