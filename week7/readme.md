@@ -244,3 +244,27 @@ function editFileClick(id) {
   ```
 
 2. Our strategy here is to find the file we're trying to edit in the database, then edit it, then save it
+  ```javascript
+  router.put('/file/:fileId', function(req, res, next) {
+  const File = mongoose.model('File');
+  const fileId = req.params.fileId;
+
+  File.findById(fileId, function(err, file) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+    if (!file) {
+      return res.status(404).json({message: "File not found"});
+    }
+
+    file.title = req.body.title;
+    file.description = req.body.description;
+
+    file.save(function(err, savedFile) {
+      res.json(savedFile);
+    })
+
+  })
+});
+```
