@@ -1,304 +1,246 @@
-# FSJS Week 6 - You had me at update/You delete me.
+# FSJS Week 7 - Change is the Only Constant
 
 **Outline**
 
-1. Set up for week6
-3. Create a form to edit files
-2. Create the Update endpoint and connect it to the front-end
-2. Create the Delete endpoint and connect it to the front-end
+1. Set up for week7
+2. Every file item has an edit button
+3. Function to push changes to the server
+3. PUT endpoint
 
 
 ## 1. Setup Project
-1. Get the latest version of the group project
-    ```
-    git clone https://github.com/CodeLouisville/FSJS-class-project.git
-    ```
+1. (optional) Clone the project
+```
+git clone https://github.com/CodeLouisville/FSJS-class-project.git
+cd FSJS-class-project
+```
 
-    or if you already have a clone repository
-    ```
-    git pull
-    ```
+  **OR** if you need to ditch your current changes and pull a fresh copy down, try this:
+  ```
+  git stash
+  git pull
+  ```
 
-1. Remove `week6` (because we are going to recreate it today) and copy `week5` to `week6`
-    ```
-    rm -rf week6
-    cp -r week5 week6
-    cd week6
-    ```
+2. Get rid of `week7` (we're going to rebuild it)
+```
+rm -rf week7
+```
 
-3. Install packages
-    ```
-    npm install
-    ```
+3. Copy `week6` to `week7`
+```
+cp -R week6 week7
+cd week7
+```
 
-5. Start application
-    ```
-    node index.js
-    ```
+4. Install dependencies
+```
+npm install
+```
+
+**Strategy:**
+* A User will visit the site and see an edit button beside each file.
+* Clicking on this button will cause a form (previously not visible) to appear.
+* This will be the same form that adds a new File.
+* That form will have all the current information for the selected file
+* Our user will use that form to edit the existing File.
+* The `Submit` button will trigger a javascript function that grabs the data from the form and PUTs it to an API endpoint
+* After PUTting the data and receiving a response, the page will refresh the list of Files.
+
+## 2. Add an edit button to each item.
+
+1. Open `public/index.html` and find the `#list-template` handlebars template we use to render the list of files.  Add a button to each item.
+```html
+<li class="list-group-item">
+  <strong>{{title}}</strong> - {{description}}
+  <span class="pull-right">
+    <button type="button" class="btn btn-xs btn-default">Edit</button>
+  </span>
+</li>
+```
+
+2. Add some functionality to that button.  Add an `onclick` event handler and its corresponding function.
+```html
+<button type="button" class="btn btn-xs btn-default" onclick="editFileClick()">Edit</button>
+```
+And the function goes in `/public/js/app.js`
+```javascript
+function editFileClick() {
+  console.log("I will edit for you!");
+}
+```
+
+This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) open a form with the data for a specific file.  We need somehow get the File data in to our `editFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
+
+Pass the unique File `_id` field to our function in the `onclick` event handler.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
+
+3. Pass the `_id` parameter to the funciton
+  ```html
+  <button type="button" class="btn btn-xs btn-default" onclick="editFileClick('{{_id}}')">Edit</button>
+  ```
+  And now `console.log()` the result to show it works
+  ```javascript
+  function editFileClick(id) {
+    console.log("I will edit for you", id);
+  }
+  ```
+
+  Take a look at the edit button element to see what's going on here.
+
+4. Whenever we refresh the list of Files (remember our AJAX call), save that array to a property on the global `window` object.  This is done in `refreshFileList()`
+```javascript
+function refreshFileList() {
+  const template = $('#list-template').html();
+  const compiledTemplate = Handlebars.compile(template);
+
+  getFiles()
+    .then(files => {
+
+      window.fileList = files;
+
+      const data = {files: files};
+      const html = compiledTemplate(data);
+      $('#list-container').html(html);
+    })
+}
+```
+
+5. In our `onclick` handler, retrieve the file using `Array.find()`
+```javascript
+function editFileClick(id) {
+  const file = window.fileList.find(file => file._id === id);
+  if (file) {
+    console.log("I will edit you!", file);
+  } else {
+    console.log("Aw shucks, I didn't find", id)
+  }
+}
+```
+[Documentation for Array.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find?v=control)
+
+  Refresh the page and click on a few `Edit` buttons to see that it works.
 
 
-## Create a form
-
-### Give our Angular app the ability to select an active file
-1. Edit `public/js/template/file-list.template.html` so that each repeated `<li>` element has a click-handlers.  The directive to use is `ng-click="$ctrl.selectFile(file)"`.  The `<li>` element should look like:
-    ```html
-    <li ng-repeat="file in $ctrl.files" ng-click="$ctrl.selectFile(file)">
-      <h2>{{file.title}}</h2>
-      <p>{{file.filename}}</p>
-    </li>
-    ```
-    **ng-click:** https://docs.angularjs.org/api/ng/directive/ngClick
-
-2. Add a small function in our component (`public/js/component/file-list.component.js`) to output the passed argument:
-    ```javascript
-    this.selectFile = (file) => {
-      console.log("I GOT A FILE!!!!", file);
+6. Edit the `editFileClick()` function so that it opens the form we created last week.  When clicked, we should also populate the form with the data we wish to edit.
+  ```javascript
+  function editFileClick(id) {
+    const file = window.fileList.find(file => file._id === id);
+    if (file) {
+      $('#file-title').val(file.title);
+      $('#file-description').val(file.description);
+      toggleAddFileFormVisibility();
     }
-    ```
+  }
+  ```
 
-3. Reload the page, open a console window (`cmd-opt-I` or `ctrl-shift-I`), and click on a few files to test;
+7. Hey, what about the `_id` field?  That seems important.  Add a hidden input to the form and set that when we click edit.
+  ```html
+  <form id="add-file-form">
+    <input type="hidden" id="file-id" value="" />
+    ...
+  ```
 
-4. Alter the function to unselect any currently selected file, and select the current file.
-    ```javascript
-    this.selectFile = (file) => {
-      // get the currently selected file and set the `selected`
-      // property to false
-      const currentlySelected = this.selectedFile;
-      this.selectedFile = null;
-
-      // Mark the passed file as selected
-      if (!currentlySelected || currentlySelected._id !== file._id) {
-        this.selectedFile = angular.copy(file);
-      }
+  ```javascript
+  function editFileClick(id) {
+    const file = window.fileList.find(file => file._id === id);
+    if (file) {
+      $('#file-title').val(file.title);
+      $('#file-description').val(file.description);
+      $('#file-id').val(file._id);
+      toggleAddFileFormVisibility();
     }
-    ```
+  }
+  ```
 
-5. When a file is selected, we want its list item to change appearance.  We'll do that by adding a class to the `<li>` element with the following directive: `ng-class="{selected: file === $ctrl.selectedFile}"`
-    ```html
-    <li
-      ng-repeat="file in $ctrl.files"
-      ng-click="$ctrl.selectFile(file)"
-      ng-class="{selected: file._id === $ctrl.selectedFile._id}">
-      <h2>{{file.title}}</h2>
-      <p>{{file.filename}}</p>
-    </li>
-    ```
-    And update our css file `public/css/style.css`:
-    ```css
-    li {
-    	cursor: pointer;
+8. Problem, what if we click `Edit`, close the form and then try to add a new File? When we click `Add File` we expect to see a blank form, but instead we see data from the previously edited File.  Since we are reusing this form, we need a way to clear the data.  Let's pull all the logic for setting a form's data out in to it's own function.
+  ```javascript
+  function setFormData(data) {
+    data = data || {};
+
+    const file = {
+      title: data.title || '',
+      description: data.description || '',
+      _id: data._id || '',
+    };
+
+    $('#file-title').val(file.title);
+    $('#file-description').val(file.description);
+    $('#file-id').val(file._id);
+  }
+  ```
+  Now, we use that function in `editFileClick()` and `toggleAddFileForm()`
+
+  ```javascript
+  function toggleAddFileForm() {
+    console.log("Baby steps...");
+    setFormData({});
+    toggleAddFileFormVisibility();
+  }
+  ```
+  ```javascript
+  function editFileClick(id) {
+    const file = window.fileList.find(file => file._id === id);
+    if (file) {
+      setFormData(file);
+      toggleAddFileFormVisibility();
     }
-    li.selected {
-    	background-color: pink
-    }
-    ```
-    **ng-class:** https://docs.angularjs.org/api/ng/directive/ngClass
+  }
+  ```
 
-### Create a form that shows the selected file
-1. Create a section that only shows up when a file is selected.
-    ```html
-    <!-- public/js/template/file-list.template.html -->
-    <div ng-show="$ctrl.selectedFile">
-      <h4>Editing: {{$ctrl.selectedFile.title}}</h4>
-    </div>
-    ```
-    **ng-show:** https://docs.angularjs.org/api/ng/directive/ngShow
+## Push our changes to the server.
 
-2. Reload and click around.
+  Most of the hard work on the front-end has been done.  Really, the only difference between creating a new file and editing an existing one is that when creating, we `POST` to the server and we don't have an `_id` field, while when editing, we `PUT` to the server AND the URL is slightly different (we add the `_id` field to the url).
 
-3. Add a form:
-    ```html
-    <div ng-show="$ctrl.selectedFile">
-      <h4>Editing: {{$ctrl.selectedFile.title}}</h4>
-      <fieldset>
-        <div>
-          <label>Title: <input ng-model="$ctrl.selectedFile.title" /></label>
-        </div>
-        <div>
-          <label>Filename: <input ng-model="$ctrl.selectedFile.filename" /></label>
-        </div>
-        <div>
-          <button ng-click="$ctrl.updateFile($ctrl.selectedFile)">Update File</button>
-          <button ng-click="$ctrl.deleteFile($ctrl.selectedFile)">Delete</button>
-        </div>
-      </fieldset>
-    </div>
-    ```
-    **ng-model:** https://docs.angularjs.org/api/ng/directive/ngModel
+  We can accomplish this by checking to see if `#file-id` has a value.  If it does, we are editing, if it doesn't we are creating.
 
-4. Create a stub of a 'submit' form in our component:
-    ```javascript
-    this.updateFile = (file) => {
-      console.log("I am PUT-ing", file);
+1. In `submitFileForm()` get the `#file-id` value and check if we are PUTting or POSTing
+  ```javascript
+  function submitFileForm() {
+    console.log("You clicked 'submit'. Congratulations.");
+
+    const fileData = {
+      title: $('#file-title').val(),
+      description: $('#file-description').val(),
+      _id: $('#file-id').val(),
+    };
+
+    let method, url;
+    if (fileData._id) {
+      method = 'PUT';
+      url = '/api/file/' + fileData._id;
+    } else {
+      method = 'POST';
+      url = '/api/file';
     }
 
-    this.deleteFile = (file) => {
-      console.log("I am DELETE-ing", file);
-    }
-    ```
+    $.ajax({
+      type: method,
+      url: url,
+      data: JSON.stringify(fileData),
+      dataType: 'json',
+      contentType : 'application/json',
+    })
+      .done(function(response) {
+        console.log("We have posted the data");
+        refreshFileList();
+        toggleAddFileForm();
+      })
+      .fail(function(error) {
+        console.log("Failures at posting, we are", error);
+      })
 
-5. Reload and test
+    console.log("Your file data", fileData);
+  }
+  ```
+  That should do it, but when we try to submit an error, we get a 404 response.  We have to create the PUT endpoint.
 
-## Create the update endpoints
 
-### Create the controller
+## Handle that PUT
 
-1. Create a directory under routes: `src/routes/controllers`:
-    ```
-    mkdir src/routes/controllers
-    ```
+1. In `/src/routes/index.js`, clear out our previous, Array-based `PUT /api/file/:fileId` route:
+  ```javascript
+  router.put('/file/:fileId', function(req, res, next) {
 
-2. Create a file for our controllers
-    ```
-    touch src/routes/controllers/file.controller.js
-    ```
+  });
+  ```
 
-3. Copy our existing `GET` controller from `src/routes/index.js` and export it from `file.controller.js`
-    ```javascript
-    const mongoose = require('mongoose');
-
-    module.exports = {
-      // List all files in the database
-      list: function(req, res, next) {
-        mongoose.model('File').find(function(err, files) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
-
-          res.json(files);
-        });
-      },
-    }
-    ```
-    **The Module Object:** https://nodejs.org/api/modules.html#modules_the_module_object
-
-4. Import our controller and use that in the route:
-    ```javascript
-    const fileController = require('./controllers/file.controller');
-    //...
-    router.get('/files', fileController.list);
-    ```
-
-5. Restart the server and test that you can still list files
-
-6. Create a route in `/src/routes/index.js` that handles `PUT` requests, and use an currently-not-existing controller:
-    ```javascript
-    router.put('/files/:fileId', fileController.update);
-    ```
-
-7. Now create the `update` controller in `/src/routes/controllers/file.controller.js`
-    ```javascript
-    module.exports = {
-
-      // ...
-
-      // Update a file
-      update: function(req, res, next) {
-        const fileId = req.params.fileId;
-        const updatedFile = req.body.file;
-
-        mongoose.model('File').findById(fileId, function(err, file) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
-
-          file.title = updatedFile.title;
-          file.filename = updatedFile.filename;
-
-          file.save(function(err, file) {
-            if (err) {
-              console.log(err);
-              res.status(500).json(err);
-            }
-
-            res.json(file);
-          });
-        });
-      },
-    }
-    ```
-    **Model.findById():** http://mongoosejs.com/docs/api.html#model_Model.findById
-
-### Hook up the front-end to the back end
-1. First, move the bit of code which was responsible for getting the list of files in to its own function, so that it can be called whenever needed.  Also, make sure to call that function right after creation.
-    ```javascript
-    this.getFiles = () => {
-      return $http.get("/files").then(function(response){
-        return self.files=response.data;
-      });
-    }
-    this.getFiles();
-    ```
-
-2. In `public/js/component/file-list.component.js`, replace the `updateFile` stub with the following code:
-    ```javascript
-    this.updateFile = (file) => {
-
-      $http.put(`/files/${file._id}`, {file})
-        .then(response => {
-          console.log("Successfully updated file");
-          return this.getFiles();
-        })
-        .catch(err => {
-          console.log("Oops...there was an error", err);
-        })
-    }
-    ```
-    **$http.put:** https://docs.angularjs.org/api/ng/service/$http#put
-
-3. Restart server, reload page and test
-
-## Create the delete endpoints
-
-### Create the controller
-1. Go back to `src/routes/index` and add the following route:
-    ```javascript
-    router.delete('/files/:fileId', fileController.delete);
-    ```
-
-2. Create the controller in `/src/routes/controllers/file.controller.js`
-    ```javascript
-    {
-
-      // ...
-
-      // Delete a file
-      delete: function(req, res, next) {
-        const fileId = req.params.fileId;
-
-        mongoose.model('File').findById(fileId, function(err, file) {
-          if (err) {
-            console.log(err);
-            res.status(500).json(err);
-          }
-
-          file.remove(function(err, file) {
-            if (err) {
-              console.log(err);
-              res.status(500).json(err);
-            }
-
-            res.json(file);
-          })
-        })
-      }
-    }
-    ```
-    **Document.remove():** http://mongoosejs.com/docs/api.html#model_Model-remove
-
-3. In `public/js/component/file-list.component.js`, replace the `deleteFile` stub with the following code:
-    ```javascript
-    this.deleteFile = (file) => {
-      $http.delete(`/files/${file._id}`)
-        .then(response => {
-          console.log("Successfully deleted file");
-          this.selectedFile = null;
-          return this.getFiles();
-        })
-        .catch(err => {
-          console.log("Drat...there was an error", err);
-        })
-    }
-    ```
+2. Our strategy here is to find the file we're trying to edit in the database, then edit it, then save it

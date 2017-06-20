@@ -1,11 +1,10 @@
+// src/config/index.js
 
-const config = {
-  appName: 'My awesome app',
-  port: 8080,
+module.exports = {
+  appName: 'Our Glorious Node Project',
+  port: 3030,
   db: {
     host: 'localhost',
-    dbName: 'fsjs'
+    dbName: 'fsjs',
   }
-}
-
-module.exports = config;
+};
