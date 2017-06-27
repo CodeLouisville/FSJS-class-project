@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Our Glorious Node Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+  </head>
+  <body>
+    <div class="container">
+      <h1>A wild webpage appears...</h1>
+      <div id="list-container"></div>
+      <button id="add-file-button" class="btn btn-primary" onclick="toggleAddFileForm()">Add File</button>
+      <div id="form-container" class="panel hidden">
+        <form id="add-file-form">
+          <input type="hidden" id="file-id" value="" />
+
+          <div class="form-group">
+            <label for="file-title">Title</label>
+            <input type="text" class="form-control" id="file-title" placeholder="Title">
+          </div>
+          <div class="form-group">
+            <label for="file-description">Description</label>
+            <input type="text" class="form-control" id="file-description" placeholder="Description">
+          </div>
+          <button type="button" onclick="submitFileForm()" class="btn btn-success">Submit</button>
+          <button type="button" onclick="cancelFileForm()" class="btn btn-link">cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <script id="list-template" type="text/x-handlebars-template">
+      <ul class="list-group">
+        {{#each files}}
+        <li class="list-group-item">
+          <strong>{{title}}</strong> - {{description}}
+          <span class="pull-right">
+            <button type="button" class="btn btn-xs btn-default" onclick="editFileClick('{{_id}}')">Edit</button>
+            <button type="button" class="btn btn-xs btn-danger" onclick="deleteFileClick('{{_id}}')">Del</button>
+          </span>
+        </li>
+        {{/each}}
+      </ul>
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.8/handlebars.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+      $(document).ready(function() {
+        const data = { name: "Code Louisvillains" }
+        const greetingTemplate = 'Hello {{name}}! I am a template!';
+        const greetingCompiled = Handlebars.compile(greetingTemplate);
+        const greetingRendered = greetingCompiled(data);
+
+        $('body h1').first().after(greetingRendered);
+
+        refreshFileList();
+      });
+    </script>
+  </body>
+</html>
