@@ -28,6 +28,7 @@ rm -rf week1
 ```
 
 ## Start a project with `npm init`
+
 Starting a project in node is simple:
 ```
 mkdir week1
@@ -41,7 +42,6 @@ npm init
 ## Install code packages
 
 First, take a look at `package.json`, then run this command:
-
 ```
 npm install express --save
 ```
@@ -49,10 +49,11 @@ npm install express --save
 Now, go back to `package.json` and look at the 'dependencies' section.
 Also, a new directory has appeared: `node_modules`
 
-The above command tells `npm` to download the 'express' package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
+The above command tells `npm` to download the [express](https://expressjs.com/) package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
 
 
 ## Organize this thing
+
 When starting a project, a good practice is to lay out your directory structure and create some empty, basic files:
 ```
 .
