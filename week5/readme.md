@@ -38,7 +38,7 @@ rm -rf week5
 3. Copy `week4` to `week5`
 ```
 cp -R week4 week5
-cd week4
+cd week5
 ```
 
 4. Install dependencies
