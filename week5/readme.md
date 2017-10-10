@@ -143,7 +143,7 @@ Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your applica
     mongoose.model('File').find({}, function(err, files) {
       if (err) {
         console.log(err);
-        res.status(500).json(err);
+        return res.status(500).json(err);
       }
 
       res.json(files);
