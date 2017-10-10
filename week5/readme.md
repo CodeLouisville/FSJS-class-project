@@ -96,7 +96,7 @@ Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your applica
     Then, somewhere AFTER the line where you load your configuration, connect with the following
     ```javascript
     // Connect to MongoDB and create/use database as configured
-    mongoose.connect(`mongodb://${config.db.host}/${config.db.dbName}`);
+    mongoose.connection.openUri(`mongodb://${config.db.host}/${config.db.dbName}`);
     ```
 
 
