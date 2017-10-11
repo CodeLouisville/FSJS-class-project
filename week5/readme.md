@@ -38,7 +38,7 @@ rm -rf week5
 3. Copy `week4` to `week5`
 ```
 cp -R week4 week5
-cd week4
+cd week5
 ```
 
 4. Install dependencies
@@ -96,7 +96,7 @@ Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your applica
     Then, somewhere AFTER the line where you load your configuration, connect with the following
     ```javascript
     // Connect to MongoDB and create/use database as configured
-    mongoose.connect(`mongodb://${config.db.host}/${config.db.dbName}`);
+    mongoose.connection.openUri(`mongodb://${config.db.host}/${config.db.dbName}`);
     ```
 
 
@@ -143,7 +143,7 @@ Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your applica
     mongoose.model('File').find({}, function(err, files) {
       if (err) {
         console.log(err);
-        res.status(500).json(err);
+        return res.status(500).json(err);
       }
 
       res.json(files);
