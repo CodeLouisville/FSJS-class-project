@@ -251,7 +251,7 @@ function editFileClick(id) {
 
   File.findById(fileId, function(err, file) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return res.status(500).json(err);
     }
     if (!file) {
@@ -262,6 +262,10 @@ function editFileClick(id) {
     file.description = req.body.description;
 
     file.save(function(err, savedFile) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json(err);
+      }
       res.json(savedFile);
     })
 
