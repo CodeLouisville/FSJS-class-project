@@ -49,7 +49,7 @@ router.put('/file/:fileId', function(req, res, next) {
 
   File.findById(fileId, function(err, file) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return res.status(500).json(err);
     }
     if (!file) {
