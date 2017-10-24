@@ -60,6 +60,10 @@ router.put('/file/:fileId', function(req, res, next) {
     file.description = req.body.description;
 
     file.save(function(err, savedFile) {
+      if (err) {
+        console.error(err);
+        return res.status(500).json(err);
+      }
       res.json(savedFile);
     })
 
