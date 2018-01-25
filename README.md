@@ -7,32 +7,12 @@
 * Add a template engine
 
 ## Set up the project
-_It should still be setup from [week 1](../week1)_
-
-1. Clean the project
-_If you did something you want to keep, last week, you can make a branch and commit, or copy those files out.  To continue here, we are going to reset `week1` back to our code_
 ```
-cd FSJS-class-project
-git status
-git reset --hard HEAD
-git pull
-```
-
-2. Get rid of `week2` _(we're going to rebuild it)_
-```
-rm -rf week2
-```
-
-3. Copy `week1` to `week2` _(this is our starting point)_
-```
-cp -R week1 week2
-cd week2
-```
-
-4. Install dependencies
-```
+git checkout week2
 npm install
 ```
+_This should be similar to how we left it from [week 1](/CodeLouisville/FSJS-class-project/tree/week1)_
+
 
 ## Serve a static page
 1. Create a "public" directory inside the `src` directory
