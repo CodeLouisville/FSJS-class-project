@@ -21,6 +21,7 @@ npm install
 Postman allows you to send HTTP requests to your API.  You can tailor the url, method, payload, querystring, and headers.  This is a very powerful API testing tool which will make our development easier.
 
 [[Download here](https://www.getpostman.com/docs/postman/launching_postman/installation_and_updates)]
+<<<<<<< HEAD
 
 ### Nodemon
 
@@ -33,6 +34,15 @@ Enter: Nodemon - Monitor for any changes in your node.js application and automat
 1. Create a "public" directory inside the root directory
 =======
 >>>>>>> added week3 readme
+=======
+
+### Nodemon
+
+Tired of restarting your Node server every time you change a file? Hand getting a cramp from hitting `ctrl-c` after every typo fix? **You're in luck**
+
+Enter: Nodemon - Monitor for any changes in your node.js application and automatically restart the server - perfect for development.
+
+>>>>>>> added week3 readme
 ```
 npm install nodemon -g
 ```
@@ -42,7 +52,11 @@ Here, we're NOT using the `--save` switch, but we are using the mysterious `-g`.
 Next, add a script to `package.json`.  Find the `scripts` section and replace it with the following:
 ```javascript
 "scripts": {
+<<<<<<< HEAD
   "start": "nodemon src/server.js"
+=======
+  "start": "nodemon index.js"
+>>>>>>> added week3 readme
 },
 ```
 [[Documentation on NPM scripts](https://docs.npmjs.com/misc/scripts)]
@@ -113,6 +127,7 @@ Head over to postman and test it out.
 
 3. Add **Update**, **Delete**, and **Read** endpoints - all of which take a route parameter:
 ```javascript
+<<<<<<< HEAD
 router.get('/file/:fileId', function(req, res, next) {
   res.end(`Reading file '${req.params.fileId}'`);
 });
@@ -123,6 +138,18 @@ router.put('/file/:fileId', function(req, res, next) {
 
 router.delete('/file/:fileId', function(req, res, next) {
   res.end(`Deleting file '${req.params.fileId}'`);
+=======
+router.put('/file/:fileId', function(req, res, next) {
+  res.end(`Updating file '${req.params.fileId}'`);
+});
+
+router.delete('/file/:fileId', function(req, res, next) {
+  res.end(`Deleting file '${req.params.fileId}'`);
+});
+
+router.get('/file/:fileId', function(req, res, next) {
+  res.end(`Reading file '${req.params.fileId}'`);
+>>>>>>> added week3 readme
 });
 ```
 [[Documentation for Route Parameters](https://expressjs.com/en/guide/routing.html#route-parameters)]
