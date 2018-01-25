@@ -42,7 +42,7 @@ Here, we're NOT using the `--save` switch, but we are using the mysterious `-g`.
 Next, add a script to `package.json`.  Find the `scripts` section and replace it with the following:
 ```javascript
 "scripts": {
-  "start": "nodemon index.js"
+  "start": "nodemon src/server.js"
 },
 ```
 [[Documentation on NPM scripts](https://docs.npmjs.com/misc/scripts)]
@@ -113,16 +113,16 @@ Head over to postman and test it out.
 
 3. Add **Update**, **Delete**, and **Read** endpoints - all of which take a route parameter:
 ```javascript
+router.get('/file/:fileId', function(req, res, next) {
+  res.end(`Reading file '${req.params.fileId}'`);
+});
+
 router.put('/file/:fileId', function(req, res, next) {
   res.end(`Updating file '${req.params.fileId}'`);
 });
 
 router.delete('/file/:fileId', function(req, res, next) {
   res.end(`Deleting file '${req.params.fileId}'`);
-});
-
-router.get('/file/:fileId', function(req, res, next) {
-  res.end(`Reading file '${req.params.fileId}'`);
 });
 ```
 [[Documentation for Route Parameters](https://expressjs.com/en/guide/routing.html#route-parameters)]
