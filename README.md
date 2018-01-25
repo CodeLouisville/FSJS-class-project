@@ -15,7 +15,7 @@ _This should be similar to how we left it from [week 1](/CodeLouisville/FSJS-cla
 
 
 ## Serve a static page
-1. Create a "public" directory inside the `src` directory
+1. Create a "public" directory inside the root directory
 ```
 mkdir public
 ```
