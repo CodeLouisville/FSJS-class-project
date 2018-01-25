@@ -29,7 +29,7 @@ const path = require('path');
 
 Then add the following line to `server.js` BEFORE any routes
 ```javascript
-const publicPath = path.resolve(__dirname, './public');
+const publicPath = path.resolve(__dirname, '../public');
 app.use(express.static(publicPath));
 ```
 [[Documentation for Node Modules (dirname)](https://nodejs.org/api/modules.html)]
@@ -46,7 +46,9 @@ app.use(express.static(publicPath));
     <title>Our Glorious Node Project</title>
   </head>
   <body>
-    <h1>A wild webpage appears...</h1>
+    <div class="container">
+      <h1>A wild webpage appears...</h1>
+    </div>
 
   </body>
 </html>
