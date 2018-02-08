@@ -9,7 +9,7 @@
 
 ## Set up the project
 ```
-git clone week4
+git checkout -b week4 origin/week4
 npm install
 ```
 
