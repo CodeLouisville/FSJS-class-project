@@ -1,132 +1,193 @@
-# FSJS Week 4 - The Full Stackey
+# FSJS Week 5 - Mongo!!!!
 
 **Outline**
 
-* Set up the project
-* Render data from the server on our page
-* Add POST and PUT endpoints
+2. Set up Mongo (Go ahead and start on this)
+1. Set up for week5
+3. Create a model and seed it with data
+4. Connect Mongo to our application
+
+## 1. Set up Mongo
+
+### Option 1 - Create a database at mLab (recommended)
+
+1. Head over to [mLab](https://mlab.com)  (https://mlab.com)
+2. If you have an account, log in, otherwise click on "Sign Up"
+3. Click on "Create New"
+  * Any cloud provider will do
+  * Make sure you choose the "Sandbox" plan type
+  * Click "Continue" at the bottom of the page
+  * Answer all remaining questions (region, etc.)
+  * Choose a name...could be anything...maybe "fsjs-class-project"
+  * Complete setup
+4. Click on your new database in the list and note the connection links provided
+
+### Option 2 - Install mongo on your machine
+
+**Windows**:  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
+
+**Linux**
+ https://docs.mongodb.com/manual/administration/install-on-linux/
+
+**OSX**
+ https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
 
 
-## Set up the project
+## 2. Setup Project
+1. Clear changes made last week
 ```
-git checkout -b week4 origin/week4
+git reset --hard HEAD
+```
+
+2. Check out a clean week5
+```
+git checkout -b week4 origin/week5
+git pull
 npm install
 ```
 
-## Render data from the server
-We have a nice API endpoint to spit out data (albeit static data from an array).  Let's use that in our front-end.  
-
-1. Create a new file in a new directory: `public\js\app.js`.
-(We could continue to put all our javascript in `script` tags in `index.html`, but placing this code in a separate file will help keep things neat and organized)
-
-2. Load this in to our `index.html`.  At the bottom of the file, just below the `script` tag that loads the handlebars library, add:
-```html
-<script src="/js/app.js"></script>
+3. Install mongoose
 ```
-
-3. Update our handlebars template to render a file and not a BTVS character list.  Replace the `#list-template` script in `index.html` with the following:
-```html
-<script id="list-template" type="text/x-handlebars-template">
-  <ul class="list-group">
-    {{#each files}}
-    <li class="list-group-item">
-      <strong>{{title}}</strong> - {{description}}
-    </li>
-    {{/each}}
-  </ul>
-</script>
+npm install mongoose --save
 ```
-While we're at it, we can let's delete the code that rendered our previous test data. (If you want to keep it around for reference, just comment it out.)
+**Mongoose Documentation:** http://mongoosejs.com/docs/api.html
 
-4. In `app.js`, create a function to get the file list:
-```javascript
-function getFiles() {
-  return $.ajax('/api/file')
-    .then(res => {
-      console.log("Results from getFiles()", res);
-      return res;
-    })
-    .fail(err => {
-      console.log("Error in getFiles()", err);
-      throw err;
+## HOLD THE PHONE...
+**What is Mongo? Sounds like a cartoon character's name...**
+
+Mongo is a database.  It is a place to store structured data so that your application can quickly and easily find it later.  Mongo is known as a no-SQL database. In the case of Mongo, that means that it stores data in units called `documents` - which look just like javascript objects (key-value pairs, nested objects, arrays, etc.).
+
+## WAIT A MINUTE....
+**What is this `mongoose` of which you speak?**
+
+Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your application to make the process of querying, inserting, updating, and deleting data in a Mongo database.  In addition, it turns the plain ol' javascript objects you get back from Mongo in to more feature-rich objects for your application to use.
+
+![Mongoose Diagram](mongoose_diag.png)
+
+
+## Create a model using mongoose
+
+**In a nutshell, we will:**
+1. Tell mongoose how to talk to the mongo server
+2. Make sure mongoose connects to mongo when your application starts.
+3. Create a "model" in mongoose.  This is where you define what your data looks like.
+4. Use Mongo in our route handlers instead of the array we've been using.
+5. Add some test data.
+
+
+### Configure our app to work with mongo
+1. Edit our config file (at `src/config/index.js`) so that the returned configuration object includes mongo configuration:
+    ```javascript
+    module.exports = {
+      appName: 'Our Glorious Node Project',
+      port: 3030,
+      db: {
+        username: <mLab username>,
+        password: <mLab password>,
+        host: 'ds159507.mlab.com:59507',
+        dbName: 'fsjs-class-project',
+      }
+    };
+    ```
+
+2. Connect to mongo through the mongoose library.  In `src/server.js`, somewhere near the top of the file, import mongoose with the following.  Note that when we connect to the mongo server, we are piecing together the connection string handed to us by mLab.
+    ```javascript
+    // Load mongoose package
+    const mongoose = require('mongoose');
+    ```
+    Then, somewhere AFTER the line where you load your configuration, connect with the following
+    ```javascript
+    // Connect to MongoDB and create/use database as configured
+    mongoose.connection.openUri(`mongodb://${config.db.username}:${config.db.password}@${config.db.host}/${config.db.dbName}`);
+    ```
+
+
+### Build the model
+
+1. In the `src/models` directory, create an empty file called `file.model.js`
+2. At the top of that file, pull in mongoose
+    ```javascript
+    // Load mongoose package
+    const mongoose = require('mongoose');
+    ```
+
+3. Create a schema
+    ```javascript
+    const FileSchema = new mongoose.Schema({
+      title: String,
+      description: String,
+      created_at: { type: Date, default: Date.now },
     });
-}
-```
+    ```
+    Notice that the `title` and `description` fields are also present in our faked data (`/src/routes/index.js`).  We've also added a new field called `created_at`, which will be a Date and will default to the current time.
 
-5. Create a function to refresh the list
-```javascript
-function refreshFileList() {
-  const template = $('#list-template').html();
-  const compiledTemplate = Handlebars.compile(template);
+4. Turn that schema in to a mongoose model, register it, and export it
+    ```javascript
+    const File = mongoose.model('File', FileSchema);
+    module.exports = File;
+    ```
+    A lot is going on here.  We are storing the `File` schema inside the mongoose object (which will make it available anywhere in your application).  We're also giving a name ("File") so we can distinguish it from any other model we may want to register.  We're also exporting the model from this module.
 
-  getFiles()
-    .then(files => {
-      const data = {files: files};
-      const html = compiledTemplate(data);
-      $('#list-container').html(html);
-    })
-}
-```
-Test it out by refreshing the page, opening a debugging console, and typing `refreshFileList()`;
+5. Make sure that the `file.model.js` script is run by `require`-ing it somewhere...like in `src/server.js`, below the line where we connect mongoose to mongo:
+    ```javascript
+    // Import all models
+    require('./models/file.model.js');
+    ```
 
-6. Refresh the list automatically when the page first loads by adding  `refreshFileList()` to the remaining `$().ready()` function in `index.html`
+## Connect to our app
+1. In `src/routes/index.js`, pull in mongoose at the top of the file.
+    ```javascript
+    const mongoose = require('mongoose');
+    ```
 
-## Finish What we started
-1. We are going to be sending data from the client back to the server.  To do that, we will convert a plain JS object to a JSON-formatted string (really, jQuery will do that for us).  We need to set up our express server to parse that JSON string and turn it back in to an object.
+2. Edit the `GET /file` route.  Replace our development code with
+    ```javascript
+    mongoose.model('File').find({}, function(err, files) {
+      if (err) {
+        console.log(err);
+        return res.status(500).json(err);
+      }
 
-Fortunately, there a library for that:
-```
-npm install body-parser --save
-```
-[[Documentation for body-parser](https://github.com/expressjs/body-parser)]
+      res.json(files);
+    });
+    ```
+    **Model.find:** http://mongoosejs.com/docs/api.html#model_Model.find
 
-`body-parser` will look at the body of a request and, if the `Content-Type` is `application/json`, will parse the body using `JSON.parse()`.  The results of that (if successful) will be put in `req.body` for use by any middleware.
+3. Restart server and test - **Where did our data go?**
 
-2. At the top of `server.js`, require the body-parser module:
-```javascript
-const bodyParser = require('body-parser');
-```
+### What about some test data?
+Strategy: On startup, check if there are any files in the database, if not, then add files from a seed file.
 
-3. Tell our server to use it.  In `server.js`, right AFTER we set up static files serving, add the following:
-```javascript
-app.use(function(req, res, next) {
-  console.log("req.body BEFORE parsing", req.body);
-  next();
-})
+1. Create a file in `/src/models` called `file.seed.json`
+    ```json
+    [
+      {"title":"Satellite of Love Plans.svg", "description": "Includes fix for exhaust port vulnerability" },
+      {"title":"Rules of Cribbage.doc", "description": "9th edition" },
+      {"title":"avengers_fanfic.txt", "description": "PRIVATE DO NOT READ" }
+    ]
+    ```
 
-app.use(bodyParser.json());
+2. In `file.model.js`, after you create and export the model, get the current count of documents in the collection
+    ```javascript
+    File.count({}, function(err, count) {
+      if (err) {
+        throw err;
+      }
+      // ...
+    });
+    ```
+    **Model.count:** http://mongoosejs.com/docs/api.html#model_Model.count
 
-app.use(function(req, res, next) {
-  console.log("req.body AFTER parsing", req.body);
-  next();
-})
-```
-Head over to postman. Create a POST request to ANY endpoint.  Tell postman that the content is JSON (use the dropdown).  Type in any valid JSON-formatted string and hit send.  You'll see the contents outputted by the two middleware we added before and after the bodyParser middleware.
+3. Add the seed data
+    ```javascript
+    if (count > 0) return ;
 
-4. Delete the logging middleware
-
-5. Go back to our routes and add the POST and PUT endpoints. In `routes/index.js`, swap out the `router.put()` and `router.post()` callbacks (which were just placeholders) with the following:
-```javascript
-router.post('/file', function(req, res, next) {
-  const newId = '' + FILES.length;
-  const data = req.body;
-  data.id = newId;
-
-  FILES.push(data);
-  res.status(201).json(data);
-});
-```
-and
-```javascript
-router.put('/file/:fileId', function(req, res, next) {
-  const {fileId} = req.params;
-  const file = FILES.find(entry => entry.id === fileId);
-  if (!file) {
-    return res.status(404).end(`Could not find file '${fileId}'`);
-  }
-
-  file.title = req.body.title;
-  file.description = req.body.description;
-  res.json(file);
-});
-```
+    const files = require('./file.seed.json');
+    File.create(files, function(err, newFiles) {
+      if (err) {
+        throw err;
+      }
+      console.log("DB seeded")
+    });
+    ```
+    **Model.create:** http://mongoosejs.com/docs/api.html#model_Model.create
