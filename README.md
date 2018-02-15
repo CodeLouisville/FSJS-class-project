@@ -41,7 +41,7 @@ git reset --hard HEAD
 
 2. Check out a clean week5
 ```
-git checkout -b week4 origin/week5
+git checkout -bf week5 origin/week5
 git pull
 npm install
 ```
