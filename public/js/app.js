@@ -16,8 +16,8 @@ function refreshFileList() {
   const compiledTemplate = Handlebars.compile(template);
 
   getFiles()
-    .then(bob => {
-      const data = {files: bob};
+    .then(files => {
+      const data = {files: files};
       const html = compiledTemplate(data);
       console.log('our html', html);
       $('#list-container').html(html);
