@@ -1,45 +1,21 @@
-# FSJS Week 5 - Mongo!!!!
+# FSJS Week 6 - Something from Nothing
 
 **Outline**
 
-2. Set up Mongo (Go ahead and start on this)
-1. Set up for week5
-3. Create a model and seed it with data
-4. Connect Mongo to our application
-
-## 1. Set up Mongo
-
-### Option 1 - Create a database at mLab (recommended)
-
-1. Head over to [mLab](https://mlab.com)  (https://mlab.com)
-2. If you have an account, log in, otherwise click on "Sign Up"
-3. Click on "Create New"
-  * Any cloud provider will do
-  * Make sure you choose the "Sandbox" plan type
-  * Click "Continue" at the bottom of the page
-  * Answer all remaining questions (region, etc.)
-  * Choose a name...could be anything...maybe "fsjs-class-project"
-  * Complete setup
-4. Click on your new database in the list and note the connection links provided
-
-### Option 2 - Install mongo on your machine
-
-**Windows**:  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
-
-**Linux**
- https://docs.mongodb.com/manual/administration/install-on-linux/
-
-**OSX**
- https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
+1. Set up for week6
+2. Create a hidable form to add files
+4. Client-side function to POST a new files
+5. Server-side handler that creates file
 
 
-## 2. Setup Project
+## 1. Setup Project
 1. Clear changes made last week
 ```
 git reset --hard HEAD
+git clean -f
 ```
 
-2. Check out a clean week5
+2. Check out a clean week6 branch
 ```
 git fetch
 git checkout -fb week5 origin/week5
@@ -47,148 +23,171 @@ git pull
 npm install
 ```
 
-3. Install mongoose
-```
-npm install mongoose --save
-```
-**Mongoose Documentation:** http://mongoosejs.com/docs/api.html
+**Strategy:** 
+* A User will visit the site and see a button that reads `Add File`.  
+* Clicking on this button will cause a blank form (previously not visible) to appear.  
+* Our user will use that form to add a new File to the database.  
+* The form has fields for `title` and `description` fields, a `Submit` and a `Cancel` button.  
+* The `Submit` and `Cancel` buttons do exactly what you think they would do.  
+ * The `Submit` button will trigger a javascript function that grabs the data from the form and POSTs it to an API endpoint (we already have one...remember it?)
+ * After POSTing the data and receiving a response, the page will refresh the list of Files.
+ * The `Cancel` button will close the form without POSTing the data
+* Clicking the `Add File` button while the form is open has the same effect as clicking `Cancel.`
 
-## HOLD THE PHONE...
-**What is Mongo? Sounds like a cartoon character's name...**
-
-Mongo is a database.  It is a place to store structured data so that your application can quickly and easily find it later.  Mongo is known as a no-SQL database. In the case of Mongo, that means that it stores data in units called `documents` - which look just like javascript objects (key-value pairs, nested objects, arrays, etc.).
-
-## WAIT A MINUTE....
-**What is this `mongoose` of which you speak?**
-
-Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your application to make the process of querying, inserting, updating, and deleting data in a Mongo database.  In addition, it turns the plain ol' javascript objects you get back from Mongo in to more feature-rich objects for your application to use.
-
-![Mongoose Diagram](mongoose_diag.png)
+## 2. Create a form
 
 
-## Create a model using mongoose
+1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Open `public/index.html` and make the first two lines of the `<body>` look like this:
+  ```html
+  <div class="container">
+    <h1>A wild webpage appears...</h1>
+    <div id="list-container"></div>
+  </div>
+  ```
 
-**In a nutshell, we will:**
-1. Tell mongoose how to talk to the mongo server
-2. Make sure mongoose connects to mongo when your application starts.
-3. Create a "model" in mongoose.  This is where you define what your data looks like.
-4. Use Mongo in our route handlers instead of the array we've been using.
-5. Add some test data.
+2. Add a button that calls a function when clicked below the file list.
+  ```html
+  <button id="add-file-button" class="btn btn-primary">Add File</button>
+  ```
+  
+3. We need that button to do something when we click it.  Add an `onclick` handler:
+  ```html
+  <button id="add-file-button" class="btn btn-primary" onclick="toggleAddFileForm()">Add File</button>
+  ```
 
+3.  What's that `toggleAddFileForm()` function? We have to create it.  Add the following code to the file we created to house our code: `public/js/app.js`.
+  ```javascript
+  function toggleAddFileForm() {
+    console.log("Baby steps...");
+  }
+  ```
+  Refresh the page, open a console, and click the button a few times.
 
-### Configure our app to work with mongo
-1. Edit our config file (at `src/config/index.js`) so that the returned configuration object includes mongo configuration:
-    ```javascript
-    module.exports = {
-      appName: 'Our Glorious Node Project',
-      port: 3030,
-      db: {
-        username: <mLab username>,
-        password: <mLab password>,
-        host: 'ds159507.mlab.com:59507',
-        dbName: 'fsjs-class-project',
-      }
-    };
-    ```
+4. Add a section of HTML that will appear and disappear on command.  Add this below the `Add File` button.
+  ```html
+  <div id="form-container" class="panel hidden">
+    Really...someone should put a form here...
+  </div>
+  ```
+  If you refresh the page, nothing will appear because of bootstrap's `.hidden` class.
 
-2. Connect to mongo through the mongoose library.  In `src/server.js`, somewhere near the top of the file, import mongoose with the following.  Note that when we connect to the mongo server, we are piecing together the connection string handed to us by mLab.
-    ```javascript
-    // Load mongoose package
-    const mongoose = require('mongoose');
-    ```
-    Then, somewhere AFTER the line where you load your configuration, connect with the following
-    ```javascript
-    // Connect to MongoDB and create/use database as configured
-    mongoose.connection.openUri(`mongodb://${config.db.username}:${config.db.password}@${config.db.host}/${config.db.dbName}`);
-    ```
+5. Create a javascript function to toggle the visibility of the form container:
+  ```javascript
+  function toggleAddFileFormVisibility() {
+    $('#form-container').toggleClass('hidden');
+  }
+  ```
 
+  And call that function within `toggleAddFileForm()`
+  ```javascript
+  function toggleAddFileForm() {
+    console.log("Baby steps...");
+    toggleAddFileFormVisibility();
+  }
+  ```
 
-### Build the model
+6. Now insert a form into the `#form-container`
+  ```html
+  <form id="add-file-form">
+    <div class="form-group">
+      <label for="file-title">Title</label>
+      <input type="text" class="form-control" id="file-title" placeholder="Title">
+    </div>
+    <div class="form-group">
+      <label for="file-description">Description</label>
+      <input type="text" class="form-control" id="file-description" placeholder="Description">
+    </div>
+    <button type="button" onclick="submitFileForm()" class="btn btn-success">Submit</button>
+    <button type="button" onclick="cancelFileForm()" class="btn btn-link">cancel</button>
+  </form>
+  ```
+  Reload the browser and look at our beautiful form.  
 
-1. In the `src/models` directory, create an empty file called `file.model.js`
-2. At the top of that file, pull in mongoose
-    ```javascript
-    // Load mongoose package
-    const mongoose = require('mongoose');
-    ```
+7. What about those `onclick` functions?  We already know what 'cancel' should do (close the form), but will figure out what `submit` does later.
+  ```javascript
+  function submitFileForm() {
+    console.log("You clicked 'submit'. Congratulations.");
+  }
 
-3. Create a schema
-    ```javascript
-    const FileSchema = new mongoose.Schema({
-      title: String,
-      description: String,
-      created_at: { type: Date, default: Date.now },
+  function cancelFileForm() {
+    toggleAddFileFormVisibility();
+  }
+  ```
+
+  At this point, we should have 4 more simple functions in `public/js/app.js` that barely do anything. Let's change that by collecting the form data when we click `submit`:
+
+8. Add the following to our `submitFileForm` function after the `console.log` line:
+  ```javascript
+ function submitFileForm() {
+   console.log("You clicked 'submit'. Congratulations.");
+
+   const title = $('#file-title').val();
+   const description = $('#file-description').val();
+   const fileData = {
+     title: title,
+     description: description,
+   };
+
+   console.log("Your file data", fileData);
+ }
+ ```
+
+## jQuery, our POSTing hero
+
+We're going to POST json-formatted data to an endpoint on our server which will do all the hard work.  We already have a `POST /api/file` route, but currently it appends the file data to a static array (remember?  We never changed that).
+
+First, we'll use jquery to POST the data, then we'll fix our POST route.
+
+1. Add the following to our `submitFileForm` function AFTER we create the fileData object.
+  ```javascript
+  $.ajax({
+    type: "POST",
+    url: '/api/file',
+    data: JSON.stringify(fileData),
+    dataType: 'json',
+    contentType : 'application/json',
+  })
+    .done(function(response) {
+      console.log("We have posted the data");
+      refreshFileList();
+      toggleAddFileFormVisibility();
+    })
+    .fail(function(error) {
+      console.log("Failures at posting, we are", error);
     });
-    ```
-    Notice that the `title` and `description` fields are also present in our faked data (`/src/routes/index.js`).  We've also added a new field called `created_at`, which will be a Date and will default to the current time.
+  ```
+  [Documentation for jquery AJAX](https://api.jquery.com/jquery.ajax/)
+  If we refresh the page and test this, it will work, but we won't be updating the displayed list. Remember that we have that static array thing which we've never changed...let's do that now.
 
-4. Turn that schema in to a mongoose model, register it, and export it
-    ```javascript
-    const File = mongoose.model('File', FileSchema);
-    module.exports = File;
-    ```
-    A lot is going on here.  We are storing the `File` schema inside the mongoose object (which will make it available anywhere in your application).  We're also giving a name ("File") so we can distinguish it from any other model we may want to register.  We're also exporting the model from this module.
 
-5. Make sure that the `file.model.js` script is run by `require`-ing it somewhere...like in `src/server.js`, below the line where we connect mongoose to mongo:
-    ```javascript
-    // Import all models
-    require('./models/file.model.js');
-    ```
+## Now, fix the POST route handler
 
-## Connect to our app
-1. In `src/routes/index.js`, pull in mongoose at the top of the file.
-    ```javascript
-    const mongoose = require('mongoose');
-    ```
+1. Open the file `src/routes/index.js` and delete everything in our `POST /file` handler.  It should look like this when we're done:
+  ```javascript
+  router.post('/file', function(req, res, next) {
 
-2. Edit the `GET /file` route.  Replace our development code with
-    ```javascript
-    mongoose.model('File').find({}, function(err, files) {
+  });
+  ```
+
+2. Instead of appending to an array, we will use our mongoose model to insert a new "File" in to the database.  Change the `POST /file` handler to the following:
+  ```javascript
+  router.post('/file', function(req, res, next) {
+    const File = mongoose.model('File');
+    const fileData = {
+      title: req.body.title,
+      description: req.body.description,
+    };
+
+    File.create(fileData, function(err, newFile) {
       if (err) {
         console.log(err);
         return res.status(500).json(err);
       }
 
-      res.json(files);
+      res.json(newFile);
     });
-    ```
-    **Model.find:** http://mongoosejs.com/docs/api.html#model_Model.find
+  });
+  ```
+  [Documentation for mongoose Model.create](http://mongoosejs.com/docs/api.html#model_Model.create)
 
-3. Restart server and test - **Where did our data go?**
-
-### What about some test data?
-Strategy: On startup, check if there are any files in the database, if not, then add files from a seed file.
-
-1. Create a file in `/src/models` called `file.seed.json`
-    ```json
-    [
-      {"title":"Satellite of Love Plans.svg", "description": "Includes fix for exhaust port vulnerability" },
-      {"title":"Rules of Cribbage.doc", "description": "9th edition" },
-      {"title":"avengers_fanfic.txt", "description": "PRIVATE DO NOT READ" }
-    ]
-    ```
-
-2. In `file.model.js`, after you create and export the model, get the current count of documents in the collection
-    ```javascript
-    File.count({}, function(err, count) {
-      if (err) {
-        throw err;
-      }
-      // ...
-    });
-    ```
-    **Model.count:** http://mongoosejs.com/docs/api.html#model_Model.count
-
-3. Add the seed data
-    ```javascript
-    if (count > 0) return ;
-
-    const files = require('./file.seed.json');
-    File.create(files, function(err, newFiles) {
-      if (err) {
-        throw err;
-      }
-      console.log("DB seeded")
-    });
-    ```
-    **Model.create:** http://mongoosejs.com/docs/api.html#model_Model.create
+  Restart the server, go back to our website and add a new File.  Our list of files should update.  We can reload the page and/or restart the server and we will still have our newly added file in the list.
