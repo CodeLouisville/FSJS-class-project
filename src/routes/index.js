@@ -1,5 +1,6 @@
 // src/routes/index.js
 const router = require('express').Router();
+const mongoose = require('mongoose');
 
 // Totally fake data
 const FILES = [
@@ -18,7 +19,16 @@ router.use('/doc', function(req, res, next) {
  * Get a list of all files in the DB
  */
 router.get('/file', function(req, res, next) {
-  res.json(FILES);
+  const fileModel = mongoose.model('File');
+
+  fileModel.find({}, function(err, files) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  
+    res.json(files);
+  });
 });
 
 /**
