@@ -37,27 +37,22 @@ npm install
 ## 2. Create a form
 
 
-1. Clean up the look of our webpage by taking advantage of bootstrap's `.container`.  Open `public/index.html` and make the first two lines of the `<body>` look like this:
-  ```html
-  <div class="container">
-    <h1>A wild webpage appears...</h1>
-    <div id="list-container"></div>
-  </div>
-  ```
-
-2. Add a button that calls a function when clicked below the file list.
+2. Baby steps...the first thing we want is a button to open and close the form.  Add a button below the list of files that calls a function when clicked below the file list.
   ```html
   <button id="add-file-button" class="btn btn-primary">Add File</button>
   ```
+Refresh your page and see that the button appears.  Click on it a few times...nothing happens.  Good.
+
   
 3. We need that button to do something when we click it.  Add an `onclick` handler:
   ```html
-  <button id="add-file-button" class="btn btn-primary" onclick="toggleAddFileForm()">Add File</button>
+  <button id="add-file-button" class="btn btn-primary" onclick="handleAddFileClick()">Add File</button>
   ```
+Refresh your page and click on the button again. You should see and error message in the browser console indicating that the browser is trying to run a non-existant function.  Let's fix that.
 
-3.  What's that `toggleAddFileForm()` function? We have to create it.  Add the following code to the file we created to house our code: `public/js/app.js`.
+3.  What's that `handleAddFileClick()` function? We have to create it.  Add the following code to the file we created to house our code: `public/js/app.js`.
   ```javascript
-  function toggleAddFileForm() {
+  function handleAddFileClick() {
     console.log("Baby steps...");
   }
   ```
@@ -69,7 +64,7 @@ npm install
     Really...someone should put a form here...
   </div>
   ```
-  If you refresh the page, nothing will appear because of bootstrap's `.hidden` class.
+  If you refresh the page, nothing will appear because of bootstrap's `.hidden` class. You can make the div appear using your browser's developer tools or by removing the `.hidden` class and refreshing the page. 
 
 5. Create a javascript function to toggle the visibility of the form container:
   ```javascript
@@ -78,9 +73,9 @@ npm install
   }
   ```
 
-  And call that function within `toggleAddFileForm()`
+  And call that function within `handleAddFileClick()`
   ```javascript
-  function toggleAddFileForm() {
+  function handleAddFileClick() {
     console.log("Baby steps...");
     toggleAddFileFormVisibility();
   }
@@ -121,11 +116,9 @@ npm install
  function submitFileForm() {
    console.log("You clicked 'submit'. Congratulations.");
 
-   const title = $('#file-title').val();
-   const description = $('#file-description').val();
    const fileData = {
-     title: title,
-     description: description,
+     title: $('#file-title').val(),
+     description: $('#file-description').val(),
    };
 
    console.log("Your file data", fileData);
