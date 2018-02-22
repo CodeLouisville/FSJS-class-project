@@ -19,7 +19,6 @@ function refreshFileList() {
     .then(files => {
       const data = {files: files};
       const html = compiledTemplate(data);
-      console.log('our html', html);
       $('#list-container').html(html);
     })
 }
