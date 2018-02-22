@@ -18,7 +18,7 @@ git clean -f
 2. Check out a clean week6 branch
 ```
 git fetch
-git checkout -fb week5 origin/week5
+git checkout -fb week6 origin/week6
 git pull
 npm install
 ```
