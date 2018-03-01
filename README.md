@@ -46,26 +46,26 @@ npm install
 
 2. Add some functionality to that button.  Add an `onclick` event handler and its corresponding function.
 ```html
-<button type="button" class="btn btn-xs btn-default" onclick="editFileClick()">Edit</button>
+<button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick()">Edit</button>
 ```
 And the function goes in `/public/js/app.js`
 ```javascript
-function editFileClick() {
+function handleEditFileClick() {
   console.log("I will edit for you!");
 }
 ```
 
-This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) open a form with the data for a specific file.  We need somehow get the File data in to our `editFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
+This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) open a form with the data for a specific file.  We need somehow get the File data in to our `handleEditFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
 
 Pass the unique File `_id` field to our function in the `onclick` event handler.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
 
 3. Pass the `_id` parameter to the funciton
   ```html
-  <button type="button" class="btn btn-xs btn-default" onclick="editFileClick('{{_id}}')">Edit</button>
+  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick('{{_id}}')">Edit</button>
   ```
   And now `console.log()` the result to show it works
   ```javascript
-  function editFileClick(id) {
+  function handleEditFileClick(id) {
     console.log("I will edit for you", id);
   }
   ```
@@ -92,7 +92,7 @@ function refreshFileList() {
 
 5. In our `onclick` handler, retrieve the file using `Array.find()`
 ```javascript
-function editFileClick(id) {
+function handleEditFileClick(id) {
   const file = window.fileList.find(file => file._id === id);
   if (file) {
     console.log("I will edit you!", file);
@@ -106,9 +106,9 @@ function editFileClick(id) {
   Refresh the page and click on a few `Edit` buttons to see that it works.
 
 
-6. Edit the `editFileClick()` function so that it opens the form we created last week.  When clicked, we should also populate the form with the data we wish to edit.
+6. Edit the `handleEditFileClick()` function so that it opens the form we created last week.  When clicked, we should also populate the form with the data we wish to edit.
   ```javascript
-  function editFileClick(id) {
+  function handleEditFileClick(id) {
     const file = window.fileList.find(file => file._id === id);
     if (file) {
       $('#file-title').val(file.title);
@@ -126,7 +126,7 @@ function editFileClick(id) {
   ```
 
   ```javascript
-  function editFileClick(id) {
+  function handleEditFileClick(id) {
     const file = window.fileList.find(file => file._id === id);
     if (file) {
       $('#file-title').val(file.title);
@@ -153,17 +153,17 @@ function editFileClick(id) {
     $('#file-id').val(file._id);
   }
   ```
-  Now, we use that function in `editFileClick()` and `toggleAddFileForm()`
+  Now, we use that function in `handleEditFileClick()` and `handleAddFileClick()`
 
   ```javascript
-  function toggleAddFileForm() {
+  function handleAddFileClick() {
     console.log("Baby steps...");
     setFormData({});
     toggleAddFileFormVisibility();
   }
   ```
   ```javascript
-  function editFileClick(id) {
+  function handleEditFileClick(id) {
     const file = window.fileList.find(file => file._id === id);
     if (file) {
       setFormData(file);
@@ -208,7 +208,7 @@ function editFileClick(id) {
       .done(function(response) {
         console.log("We have posted the data");
         refreshFileList();
-        toggleAddFileForm();
+        toggleAddFileFormVisibility();
       })
       .fail(function(error) {
         console.log("Failures at posting, we are", error);
