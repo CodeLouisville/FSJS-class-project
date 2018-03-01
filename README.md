@@ -15,10 +15,10 @@ git reset --hard HEAD
 git clean -f
 ```
 
-2. Check out a clean week6 branch
+2. Check out a clean week7 branch
 ```
 git fetch
-git checkout -fb week6 origin/week6
+git checkout -fb week7 origin/week7
 git pull
 npm install
 ```
