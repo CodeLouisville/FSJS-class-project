@@ -23,5 +23,43 @@ function refreshFileList() {
     })
 }
 
+function handleAddFileClick() {
+  console.log("Baby steps...");
+  toggleAddFileFormVisibility();
+}
+
+function toggleAddFileFormVisibility() {
+  $('#form-container').toggleClass('hidden');
+}
+
+function submitFileForm() {
+  console.log("You clicked 'submit'. Congratulations.");
+ 
+  const fileData = {
+    title: $('#file-title').val(),
+    description: $('#file-description').val(),
+  };
+
+  $.ajax({
+    type: "POST",
+    url: '/api/file',
+    data: JSON.stringify(fileData),
+    dataType: 'json',
+    contentType : 'application/json',
+  })
+    .done(function(response) {
+      console.log("We have posted the data");
+      refreshFileList();
+      toggleAddFileFormVisibility();
+    })
+    .fail(function(error) {
+      console.log("Failures at posting, we are", error);
+    });
+}
+
+function cancelFileForm() {
+  toggleAddFileFormVisibility();
+}
+
 
 refreshFileList();

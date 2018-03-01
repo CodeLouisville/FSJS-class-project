@@ -50,12 +50,20 @@ router.get('/file/:fileId', function(req, res, next) {
  * Create a new file
  */
 router.post('/file', function(req, res, next) {
-  const newId = '' + FILES.length;
-  const data = req.body;
-  data.id = newId;
+  const File = mongoose.model('File');
+  const fileData = {
+    title: req.body.title,
+    description: req.body.description,
+  };
 
-  FILES.push(data);
-  res.status(201).json(data);
+  File.create(fileData, function(err, newFile) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+
+    res.json(newFile);
+  });
 });
 
 /**

@@ -10,6 +10,22 @@
       <h1>A wild webpage appears...</h1>
   
       <div id="list-container"></div>
+
+      <button id="add-file-button" class="btn btn-primary" onclick="handleAddFileClick()">Add File</button>
+      <div id="form-container" class="panel hidden">
+        <form id="add-file-form">
+          <div class="form-group">
+            <label for="file-title">Title</label>
+            <input type="text" class="form-control" id="file-title" placeholder="Title">
+          </div>
+          <div class="form-group">
+            <label for="file-description">Description</label>
+            <input type="text" class="form-control" id="file-description" placeholder="Description">
+          </div>
+          <button type="button" onclick="submitFileForm()" class="btn btn-success">Submit</button>
+          <button type="button" onclick="cancelFileForm()" class="btn btn-link">cancel</button>
+        </form>
+      </div>
     </div>
 
 
