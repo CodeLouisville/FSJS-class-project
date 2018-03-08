@@ -46,7 +46,9 @@ const FileSchema = new mongoose.Schema({
 2. Now make sure that our route handlers know to exclude "deleted" items. In `src/routes/index.js` update the `GET /file` handler:
 ```javascript
 router.get('/file', function(req, res, next) {
-  mongoose.model('File').find({deleted: {$ne: true}}, function(err, files) {
+  const File = mongoose.model('File');
+  
+  File.find({deleted: {$ne: true}}, function(err, files) {
     if (err) {
       console.log(err);
       return res.status(500).json(err);
@@ -94,26 +96,26 @@ How would you implement an `undelete` operation?
 
 2. Now make it do something by adding an `onclick` handler (we can copy/paste from the "Edit" button and then change it to suit our needs):
 ```html
-<button type="button" class="btn btn-xs btn-danger" onclick="deleteFileClick('{{_id}}')">Del</button>
+<button type="button" class="btn btn-xs btn-danger" onclick="handleDeleteFileClick('{{_id}}')">Del</button>
 ```
 
-3. Create the `deleteFileClick()` function in `public/js/app.js`:
+3. Create the `handleDeleteFileClick()` function in `public/js/app.js`:
 ```javascript
-function deleteFileClick(id) {
+function handleDeleteFileClick(id) {
   console.log("File", id, "is DOOMED!!!!!!");
 }
 ```
 
 4. Er....maybe we should ask for confirmation before doing this:
 ```javascript
-function deleteFileClick(id) {
+function handleDeleteFileClick(id) {
   console.log("File", id, "is DOOMED!!!!!!");
 }
 ```
 
 5. OK, now send the `DELETE` message to `/file/:fileId`.  (We can look at `submitFileForm()` to remind ourselves how to do it):
 ```javascript
-function deleteFileClick(id) {
+function handleDeleteFileClick(id) {
   if (confirm("Are you sure?")) {
     $.ajax({
       type: 'DELETE',
