@@ -14,6 +14,7 @@
       <button id="add-file-button" class="btn btn-primary" onclick="handleAddFileClick()">Add File</button>
       <div id="form-container" class="panel hidden">
         <form id="add-file-form">
+          <input type="hidden" id="file-id" value="" />
           <div class="form-group">
             <label for="file-title">Title</label>
             <input type="text" class="form-control" id="file-title" placeholder="Title">
@@ -35,6 +36,9 @@
         {{#each files}}
         <li class="list-group-item">
           <strong>{{title}}</strong> - {{description}}
+          <span class="pull-right">
+            <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick('{{_id}}')">Edit</button>
+          </span>
         </li>
         {{/each}}
       </ul>
