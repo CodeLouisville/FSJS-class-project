@@ -109,27 +109,36 @@ function handleDeleteFileClick(id) {
 4. Er....maybe we should ask for confirmation before doing this:
 ```javascript
 function handleDeleteFileClick(id) {
-  console.log("File", id, "is DOOMED!!!!!!");
+  if (confirm("Are you sure?")) {
+    console.log("File", id, "is DOOMED!!!!!!");
+  }
 }
 ```
 
-5. OK, now send the `DELETE` message to `/file/:fileId`.  (We can look at `submitFileForm()` to remind ourselves how to do it):
+5. Much better.  Now instead of logging out a message, let's send an ajax `DELETE` message to `/file/:fileId` to have the file deleted:
 ```javascript
 function handleDeleteFileClick(id) {
   if (confirm("Are you sure?")) {
-    $.ajax({
-      type: 'DELETE',
-      url: '/api/file/' + id,
-      dataType: 'json',
-      contentType : 'application/json',
-    })
-      .done(function(response) {
-        console.log("File", id, "is DOOMED!!!!!!");
-        refreshFileList();
-      })
-      .fail(function(error) {
-        console.log("I'm not dead yet!", error);
-      })
+    deleteFile(id);
   }
+}
+```
+
+6. Aaaaand we'll create that function (We can look at `submitFileForm()` to remind ourselves how to do it):
+```javascript
+function deleteFile(id) {
+  $.ajax({
+    type: 'DELETE',
+    url: '/api/file/' + id,
+    dataType: 'json',
+    contentType : 'application/json',
+  })
+    .done(function(response) {
+      console.log("File", id, "is DOOMED!!!!!!");
+      refreshFileList();
+    })
+    .fail(function(error) {
+      console.log("I'm not dead yet!", error);
+    })
 }
 ```
