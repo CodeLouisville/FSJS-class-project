@@ -11,33 +11,58 @@
 
 ## Install NodeJS
 
+### Option 1 - Just install it directly
+
 - [Windows (http://blog.teamtreehouse.com/install-node-js-npm-windows)](http://blog.teamtreehouse.com/install-node-js-npm-windows)
 - [Mac (http://blog.teamtreehouse.com/install-node-js-npm-mac)](http://blog.teamtreehouse.com/install-node-js-npm-mac)
 - [Linux (http://blog.teamtreehouse.com/install-node-js-npm-linux)](http://blog.teamtreehouse.com/install-node-js-npm-linux)
 
+### Option 2 - Use NVM (Node Version Manager) (For OSX and Linux only)
+
+- [Install NVM (https://github.com/creationix/nvm)](https://github.com/creationix/nvm)
+
+## What did we get?
+
+<dl>
+  <dt>Node</dt>
+  <dd>Your friendly, neighborhood executable.  This is what we will use to start our applications. You can also type `node` in to the command line and get a javascript environment like your browser's console.  Try it out.</dd>
+  <dt>NPM</dt>
+  <dd>Node Package Manager. A critical utility, this will install packages, initialize our project and run scripts for us.</dd>
+</dl>
+
+---
+
 ## Set up the project
-1. Clone the project
+### 1. Clone the project and checkout week1
 ```
 git clone https://github.com/CodeLouisville/FSJS-class-project.git
 cd FSJS-class-project
+git checkout -b week1 origin/week1
 ```
 
-2. Get rid of `week1` (we're going to rebuild it)
-```
-rm -rf week1
-```
+#### What did this do for us?
 
-## Start a project with `npm init`
+* Well, you've got two files...this `README.md` and a `.gitignore` file...basically this is an empty directory which you could have easily created with `mkdir <some directory>`
+* BUT, this is now a git repo with a remote branch set to the `FSJS-class-project` repo on github.  See for yourself with this command:
+```
+git remove -v
+```
+* In the future, if you ever want to replace what you've got the starting point for the current week, just run
+```
+git checkout -b -f weekX origin/weekX
+```
+(be sure to replace `weekX` with the actual name of the branch)
+
+### 2. Start a project with `npm init`
 
 Starting a project in node is simple:
 ```
-mkdir week1
-cd week1
 npm init
 ```
 
 `npm init` simply creates a `package.json` file a populates it with the answers to some questions.  You can edit it in a text editor.
 
+---
 
 ## Install code packages
 
