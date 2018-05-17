@@ -76,6 +76,7 @@ Also, a new directory has appeared: `node_modules`
 
 The above command tells `npm` to download the [express](https://expressjs.com/) package, save it in a newly created `node_modules` directory, and then add a line in `package.json` to make note of the fact that we need 'express' for this project (that's what the `--save` part does).
 
+---
 
 ## Organize this thing
 
@@ -92,6 +93,8 @@ When starting a project, a good practice is to lay out your directory structure 
     │   └── index.js
     └── server.js     // Set up server and listen on port
 ```
+
+---
 
 ## Hello World
 
@@ -150,6 +153,8 @@ app.use('/doc', function(req, res, next) {
 
 Visit `http://localhost:3030/doc`
 Move the `/doc` route below the original `app.use` code and refresh.  What happened?
+
+---
 
 ## Bonus material
 
