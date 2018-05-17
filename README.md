@@ -49,7 +49,8 @@ git remove -v
 ```
 * In the future, if you ever want to replace what you've got the starting point for the current week, just run
 ```
-git checkout -b -f weekX origin/weekX
+git stash
+git checkout -b weekX origin/weekX
 ```
 (be sure to replace `weekX` with the actual name of the branch)
 
