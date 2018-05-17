@@ -1,5 +1,0 @@
-[
-  {"title":"Satellite of Love Plans.svg", "description": "Includes fix for exhaust port vulnerability" },
-  {"title":"Rules of Cribbage.doc", "description": "9th edition" },
-  {"title":"avengers_fanfic.txt", "description": "PRIVATE DO NOT READ" }
-]
