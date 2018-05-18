@@ -45,7 +45,7 @@ git checkout -b week1 origin/week1
 * Well, you've got two files...this `README.md` and a `.gitignore` file...basically this is an empty directory which you could have easily created with `mkdir <some directory>`
 * BUT, this is now a git repo with a remote branch set to the `FSJS-class-project` repo on github.  See for yourself with this command:
 ```
-git remove -v
+git remote -v
 ```
 * In the future, if you ever want to replace what you've got the starting point for the current week, just run
 ```
