@@ -8,7 +8,7 @@
 
 ## Set up the project
 ```
-git checkout week2
+git checkout -f week2
 npm install
 ```
 _This should be similar to how we left it from [week 1](/CodeLouisville/FSJS-class-project/tree/week1)_
@@ -62,24 +62,51 @@ Note: We previously had a "Hello World" endpoint that was served when user's req
 
 
 ## Add a template engine
-1. We'll be using jQuery and Handlebars, so let's add them to our `index.html` at the end of the `<body>` tag
+1. We'll be using jQuery and template literals to make live changes to the DOM, so let's add jQuery to our `index.html` at the end of the `<body>` tag
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.8/handlebars.min.js"></script>
 ```
 [[Documentation for jQuery](https://api.jquery.com/)]
-[[Documentation for Handlebars](http://handlebarsjs.com/reference.html)]
+[[Documentation for Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)]
+
+2. Let's explore template literals a bit.  Open the console in your browser:
+```javascript
+let string1 = `template literals
+can
+be multiline`
+
+let name = "Bob";
+let string2 = `Hello ${name}!!!`;
+
+let data = {name: 'Bob'};
+let string3 = `Hello ${data.name}!!!`;
+
+let collection = [
+  {_id: 1, name: 'Bob'},
+  {_id: 2, name: 'Bobbers'},
+  {_id: 3, name: 'Bobberino'},
+];
+let string3 '';
+for (let item of collection) {
+  string3 += `Hello ${item.name}!!!\n`;
+}
+// Or better yet
+let string4 = collection.map(item => `Hello ${item.name}!!!`).join('\n');
+
+// Let's make some cool HTML
+let string5 = `<ul>
+  ${collection.map(item => `<li>Hello ${item.name}!!!</li>`).join('\n')}
+</ul>`;
+```
 
 2. Drop a quick template in `index.html` to see how handlebars renders content:
 ```html
 <script>
   $(document).ready(function() {
     const data = { name: "Code Louisvillains" }
-    const greetingTemplate = 'Hello {{name}}! I am a template!';
-    const greetingCompiled = Handlebars.compile(greetingTemplate);
-    const greetingRendered = greetingCompiled(data);
+    const html = `Hello ${data.name}! I am a template!`;
 
-    $('body h1').first().after(greetingRendered);
+    $('body h1').first().after(html);
   });
 </script>
 ```
@@ -93,40 +120,28 @@ Note: We previously had a "Hello World" endpoint that was served when user's req
 ```html
 <script>
   $(document).ready(function() {
-    const data = {
-      list: [
-        {name: 'Buffy', value: 'Slayer, guidance counselor'},
-        {name: 'Willow', value: 'Witch'},
-        {name: 'Xander', value: 'Dude, construction worker'},
-        {name: 'Giles', value: 'Watcher, Librarian'},
-      ],
-    };
+    const data = [
+      {name: 'Buffy', value: 'Slayer, guidance counselor'},
+      {name: 'Willow', value: 'Witch'},
+      {name: 'Xander', value: 'Dude, construction worker'},
+      {name: 'Giles', value: 'Watcher, Librarian'},
+    ];
+
+    const listHtml = data.map(line => `
+      <div class="row">
+        <div class="col-xs-6"><strong>{{name}}</strong></div>
+        <div class="col-xs-6">{{value}}</div>
+      </div>`).join('\n');
+
+    $('#list-container').html(listHtml);
   });
+
 </script>
 ```
 
-5. Create a template for each list item.
-```html
-<script id="list-template" type="text/x-handlebars-template">
-  {{#each list}}
-  <div class="row">
-    <div class="col-xs-6"><strong>{{name}}</strong></div>
-    <div class="col-xs-6">{{value}}</div>
-  </div>
-  {{/each}}
-</script>
-```
+5. Refresh the page
 
-6. Right below the `list` array, compile the template and render it into the container.
-```javascript
-const template = $('#list-template').html();
-const compiled = Handlebars.compile(template);
-$('#list-container').html(compiled(data));
-```
-
-7. Refresh the page
-
-8. Add some style in the `<head>`
+6. Add some style in the `<head>`
 ```html
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 ```
