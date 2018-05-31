@@ -60,7 +60,9 @@ Now, when we make changes to files, the server restarts automatically.  Try it o
 | Delete | DELETE | Delete a single element |
 | List | GET  | Get an array of elements |
 
-1. Do a little clean-up by moving our endpoints to a separate file.  Add the following to `routes/index.js`
+### 1. Do a little clean-up.
+
+Move our endpoints to a separate file. This will help keep the overall application organized.  Add the following to `routes/index.js`
 ```javascript
 // src/routes/index.js
 const router = require('express').Router();
@@ -79,6 +81,8 @@ module.exports = router;
 ```
 (Note that our "Hello world" route is unnecessary since we are serving a static index.html)
 
+### 2. Tell express to use our new router
+
 Now, head back to `server.js` and make sure our app knows how to use the router.  Create a variable for our router at the top of the file:
 ```javascript
 const router = require('./routes');
@@ -91,9 +95,15 @@ app.use('/api', router);
 
 What does the `'/api'` part do? [`app.use()` Documentation here](https://expressjs.com/en/4x/api.html#app.use).  Basically, this prepends `/api` to all the paths defined in `router` (currently, we only have `/doc`). So, instead of making a GET request to `/doc`, we will now make a request to `/api/doc`.
 
-**Fire up postman and try it**
+### 3. Fire up postman and try it
 
-2. Add some basic **List** and **Create** handlers to `routes\index.js`:
+...go ahead...we'll wait.
+
+### 4. Create stubs for our operations
+
+Stubs are placeholders.  You write them so that you remember to come back and fill them in with real logic later.
+In `routes\index.js`, add:
+
 ```javascript
 /**
  * C - reate
@@ -131,9 +141,10 @@ router.get('/file', function(req, res, next) {
 
 Route parameters allow you to pass information to the router via the url itself.  When express finds a route parameter (indicated by `:<parameter name>`), it creates a property on `req.params` with the same name.
 
-## Return some data
+### 5. Return some (faked) data
 
-1. Let's add a static array of "file" object for testing purposes.  Near the top of the `routes/index.js` file, add the following:
+We're not ready for a database yet, but we can add a fake "database" so that we can start testing our front-end.
+Let's add a static array of "file" object for testing purposes.  Near the top of the `routes/index.js` file, add the following:
 ```javascript
 const FILES = [
   {id: 'a', title: 'cutecat1.jpg', description: 'A cute cat'},
@@ -143,7 +154,7 @@ const FILES = [
 ];
 ```
 
-2. Return the entire list as JSON.  Replace the handler for `GET /file`, with:
+**NOW** Return the entire list as JSON.  Replace the handler for `GET /file`, with:
 ```javascript
 router.get('/file', function(req, res, next) {
   res.json(FILES);
@@ -153,7 +164,9 @@ router.get('/file', function(req, res, next) {
 
 `res.json()` accepts any type of data, stringifies with `JSON.stringify()` and sends the response with the header `Content-Type: application/json`.
 
-3. Return a single element by replacing the handler for `GET /file/:fileId` with:
+### 6. Keep going with the CRUD operations
+
+Return a single element by replacing the handler for `GET /file/:fileId` with:
 ```javascript
 router.get('/file/:fileId', function(req, res, next) {
   const { fileId } = req.params;
