@@ -10,7 +10,8 @@
 
 ## Set up the project
 ```
-git checkout week3
+git stash
+git checkout -f week3
 npm install
 ```
 
@@ -28,11 +29,6 @@ Tired of restarting your Node server every time you change a file? Hand getting 
 
 Enter: Nodemon - Monitor for any changes in your node.js application and automatically restart the server - perfect for development.
 
-<<<<<<< HEAD
-## Serve a static page
-1. Create a "public" directory inside the root directory
-=======
->>>>>>> added week3 readme
 ```
 npm install nodemon -g
 ```
@@ -99,32 +95,38 @@ What does the `'/api'` part do? [`app.use()` Documentation here](https://express
 
 2. Add some basic **List** and **Create** handlers to `routes\index.js`:
 ```javascript
-router.get('/file', function(req, res, next) {
-  res.end('List all files');
-});
-
+/**
+ * C - reate
+ */
 router.post('/file', function(req, res, next) {
   res.end('Create a new file');
 });
-```
-[[Documentation for router.get() and router.post()](https://expressjs.com/en/4x/api.html#router.METHOD)]
-
-Head over to postman and test it out.
-
-3. Add **Update**, **Delete**, and **Read** endpoints - all of which take a route parameter:
-```javascript
+/**
+ * R - ead
+ */
 router.get('/file/:fileId', function(req, res, next) {
   res.end(`Reading file '${req.params.fileId}'`);
 });
-
+/**
+ * U - pdate
+ */
 router.put('/file/:fileId', function(req, res, next) {
   res.end(`Updating file '${req.params.fileId}'`);
 });
-
+/**
+ * D - elete
+ */
 router.delete('/file/:fileId', function(req, res, next) {
   res.end(`Deleting file '${req.params.fileId}'`);
 });
+/**
+ * ¯\_(ツ)_/¯ - list
+ */
+router.get('/file', function(req, res, next) {
+  res.end('List all files');
+});
 ```
+[[Documentation for router.get() and router.post()](https://expressjs.com/en/4x/api.html#router.METHOD)]
 [[Documentation for Route Parameters](https://expressjs.com/en/guide/routing.html#route-parameters)]
 
 Route parameters allow you to pass information to the router via the url itself.  When express finds a route parameter (indicated by `:<parameter name>`), it creates a property on `req.params` with the same name.
@@ -136,8 +138,8 @@ Route parameters allow you to pass information to the router via the url itself.
 const FILES = [
   {id: 'a', title: 'cutecat1.jpg', description: 'A cute cat'},
   {id: 'b', title: 'uglycat1.jpg', description: 'Just kidding, all cats are cute'},
-  {id: 'c', title: 'total_recall_poster.jpg', description: 'Quaid, start the reactor...'},
-  {id: 'd', title: 'louisville_coffee.txt', description: 'Coffee shop ratings'},
+  {id: 'c', title: 'plaintext_passwords.txt', description: '12345 - like my luggage'},
+  {id: 'd', title: 'got_S08E01.mp4', description: 'home video of...a cat'},
 ];
 ```
 
@@ -154,7 +156,7 @@ router.get('/file', function(req, res, next) {
 3. Return a single element by replacing the handler for `GET /file/:fileId` with:
 ```javascript
 router.get('/file/:fileId', function(req, res, next) {
-  const {fileId} = req.params;
+  const { fileId } = req.params;
   // same as 'const fileId = req.params.fileId'
 
   const file = FILES.find(entry => entry.id === fileId);
