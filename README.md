@@ -3,78 +3,162 @@
 **Outline**
 
 * Set up the project
+* Organize our project javascript
 * Render data from the server on our page
 * Add POST and PUT endpoints
 
 
 ## Set up the project
 ```
-git checkout -b week4 origin/week4
+git stash
+git checkout -f week4
 npm install
 ```
 
-## Render data from the server
-We have a nice API endpoint to spit out data (albeit static data from an array).  Let's use that in our front-end.  
+## Organize our project javascript
+Putting all our javascript in `<script>` tags may be convenient, but it will soon get unwieldy.  Let's put our javascript in a separate `.js` file and pull that in to our HTML.
 
-1. Create a new file in a new directory: `public\js\app.js`.
+### 1. Create a new file in a new directory: `public\js\app.js`.
 (We could continue to put all our javascript in `script` tags in `index.html`, but placing this code in a separate file will help keep things neat and organized)
 
-2. Load this in to our `index.html`.  At the bottom of the file, just below the `script` tag that loads the handlebars library, add:
+### 2. Load this in to our `index.html`.  At the bottom of the file, just below the `script` tag that loads the handlebars library, add:
 ```html
 <script src="/js/app.js"></script>
 ```
 
-3. Update our handlebars template to render a file and not a BTVS character list.  Replace the `#list-template` script in `index.html` with the following:
-```html
-<script id="list-template" type="text/x-handlebars-template">
-  <ul class="list-group">
-    {{#each files}}
-    <li class="list-group-item">
-      <strong>{{title}}</strong> - {{description}}
-    </li>
-    {{/each}}
-  </ul>
-</script>
-```
-While we're at it, we can let's delete the code that rendered our previous test data. (If you want to keep it around for reference, just comment it out.)
+### 3. Take this opportunity to think about the project goals and stub out a few functions which we will use (or refactor) to accomplish those goals
 
-4. In `app.js`, create a function to get the file list:
+We know we need to fetch data from the server...
 ```javascript
+/**
+ * Fetches data from the api
+ */
 function getFiles() {
-  return $.ajax('/api/file')
-    .then(res => {
-      console.log("Results from getFiles()", res);
-      return res;
-    })
-    .fail(err => {
-      console.log("Error in getFiles()", err);
-      throw err;
-    });
+
 }
 ```
 
-5. Create a function to refresh the list
+And we know that we need to render a list of files on the page...
 ```javascript
-function refreshFileList() {
-  const template = $('#list-template').html();
-  const compiledTemplate = Handlebars.compile(template);
+/**
+ * Render a list of files
+ */
+function renderFiles(files) {
 
+}
+```
+
+aaaaand we should probably have some function that ties those two operations together...
+```javascript
+/**
+ * Fetch files from the API and render to the page
+ */
+function refreshFileList() {
+
+}
+```
+
+...ok we can stop there. That's the basics.  We will definitely add more functions as needed. For now, let's fill in some of the details.
+
+## Render data from the server
+We have a nice API endpoint to spit out data (albeit static data from an array).  Let's use that in our front-end.  
+
+### Consuming our API
+First, let's see if we can pull data from our API. Last week, we used Postman to test our enpoint. Now we want to use javascript to do something similar.  We'll use the browser's built-in AJAX library, [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch).  Of course, you could use another AJAX library like [Axios](https://github.com/axios/axios), [jQuery](http://api.jquery.com/jquery.ajax/), [Superagent](https://visionmedia.github.io/superagent/), or [Request](https://github.com/request/request).
+
+(the `fetch` api uses Promises, so it is important to understand how they work.  Read up on some [Promises Documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise))
+```javascript
+/**
+ * Fetches data from the api
+ */
+function getFiles() {
+  return fetch('/api/file')
+    .then(response => response.json())
+    .then(files => {
+      console.log("Files, I got them:", files);
+      return files;
+    })
+    .catch(error => console.error("GETFILES:", error));
+}
+```
+Head over to your browser console and try this out. `getFiles` is on the `window` object, so we should be able to simply type `getFiles()` and see the results.
+
+What about that render function?  We'll have a function that takes an array of files as an argument and then uses template literals to generate html
+```javascript
+/**
+ * Render a list of files
+ */
+function renderFiles(files) {
+  const listItems = files.map(file => `
+    <li class="list-group-item">
+      <strong>${file.title}</strong> - ${file.description}
+    </li>`);
+  const html = `<ul class="list-group">${listItems.join('')}</ul>`;
+
+  return html;
+}
+```
+
+And now! We combine the two.
+```javascript
+/**
+ * Fetch files from the API and render to the page
+ */
+function refreshFileList() {
   getFiles()
     .then(files => {
-      const data = {files: files};
-      const html = compiledTemplate(data);
+      const html = renderFiles(files);
       $('#list-container').html(html);
-    })
+    });
 }
 ```
 Test it out by refreshing the page, opening a debugging console, and typing `refreshFileList()`;
 
-6. Refresh the list automatically when the page first loads by adding  `refreshFileList()` to the remaining `$().ready()` function in `index.html`
+### Integrate this in to our page
 
-## Finish What we started
-1. We are going to be sending data from the client back to the server.  To do that, we will convert a plain JS object to a JSON-formatted string (really, jQuery will do that for us).  We need to set up our express server to parse that JSON string and turn it back in to an object.
+So to make this the default behavior of the page, we need to do two things:
 
-Fortunately, there a library for that:
+1. Get rid of our previous demo code in `index.html`. 
+2. Call `refreshFileList()` once the page has loaded.
+
+Your html should look like this
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Our Glorious Node Project</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>A wild webpage appears...</h1>
+  
+      <div id="list-container"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+      $(document).ready(function() {
+        refreshFileList();
+      });
+    </script>
+
+  </body>
+</html>
+```
+
+## Pushing data back up to the server
+
+Thus far, data flow has been one-way.  The client requests data, the server delivers.  HOWEVER, when we create, update and delete records in/from our application, we will need to send some data up to the server from the client.  Let's work on that.
+
+First thing to understand is that when an http request is made, it is broken in to small chunks and sent out in to the universe via the TCP protocol.  That means that Node has to put those pieces back together, in order.
+
+This also means that whatever nice, coherent message you lovingly placed inthe body of your POST or PUT message is now just a series of ones and zeros in memory and you have to tell Node what they mean before you can use them.
+
+_**Body-Parser to the rescue!!!**_
+
 ```
 npm install body-parser --save
 ```
@@ -105,7 +189,7 @@ Head over to postman. Create a POST request to ANY endpoint.  Tell postman that 
 
 4. Delete the logging middleware
 
-5. Go back to our routes and add the POST and PUT endpoints. In `routes/index.js`, swap out the `router.put()` and `router.post()` callbacks (which were just placeholders) with the following:
+5. Go back to our routes and edit our POST and PUT handlers make changes to our fake DB:
 ```javascript
 router.post('/file', function(req, res, next) {
   const newId = '' + FILES.length;
