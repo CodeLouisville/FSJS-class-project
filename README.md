@@ -192,25 +192,18 @@ Head over to postman. Create a POST request to ANY endpoint.  Tell postman that 
 5. Go back to our routes and edit our POST and PUT handlers make changes to our fake DB:
 ```javascript
 router.post('/file', function(req, res, next) {
-  const newId = '' + FILES.length;
   const data = req.body;
-  data.id = newId;
+  console.log("POST DATA", data);
 
-  FILES.push(data);
-  res.status(201).json(data);
+  res.end('Create a new file');
 });
 ```
 and
 ```javascript
 router.put('/file/:fileId', function(req, res, next) {
-  const {fileId} = req.params;
-  const file = FILES.find(entry => entry.id === fileId);
-  if (!file) {
-    return res.status(404).end(`Could not find file '${fileId}'`);
-  }
+  const data = req.body;
+  console.log("PUT DATA", data);
 
-  file.title = req.body.title;
-  file.description = req.body.description;
-  res.json(file);
+  res.end(`Updating file '${req.params.fileId}'`);
 });
 ```
