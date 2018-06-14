@@ -1,28 +1,37 @@
-
+/**
+ * Fetches data from the api
+ */
 function getFiles() {
-  return $.ajax('/api/file')
-    .then(res => {
-      console.log("Results from getFiles()", res);
-      return res;
-    })
-    .fail(err => {
-      console.error("Error in getFiles()", err);
-      throw err;
-    });
-}
-
-function refreshFileList() {
-  const template = $('#list-template').html();
-  const compiledTemplate = Handlebars.compile(template);
-
-  getFiles()
+  return fetch("/api/file")
+    .then(response => response.json())
     .then(files => {
-      const data = {files: files};
-      const html = compiledTemplate(data);
-      console.log('our html', html);
-      $('#list-container').html(html);
+      console.log("Files, I got them:", files);
+      return files;
     })
+    .catch(error => console.error("GETFILES:", error));
 }
 
+/**
+ * Render a list of files
+ */
+function renderFiles(files) {
+  const listItems = files.map(
+    file => `
+    <li class="list-group-item">
+      <strong>${file.title}</strong> - ${file.description}
+    </li>`
+  );
+  const html = `<ul class="list-group">${listItems.join("")}</ul>`;
 
-refreshFileList();
+  return html;
+}
+
+/**
+ * Fetch files from the API and render to the page
+ */
+function refreshFileList() {
+  getFiles().then(files => {
+    const html = renderFiles(files);
+    $("#list-container").html(html);
+  });
+}
