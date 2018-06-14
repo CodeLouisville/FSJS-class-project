@@ -38,7 +38,7 @@
 1. Clear changes made last week
 ```
 git stash
-git checkout -f week4
+git checkout -f week5
 git pull
 npm install
 ```
