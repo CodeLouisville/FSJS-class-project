@@ -21,35 +21,32 @@
   * Choose a name...could be anything...maybe "fsjs-class-project"
   * Complete setup
 4. Click on your new database in the list and note the connection links provided
+![MLab Connection Info](mlab_connection_string.png)
+5. Select the "Users" tab and click on `Add database user`
+6. Select a username and password and make sure that the user you create is NOT read-only.
 
 ### Option 2 - Install mongo on your machine
 
 **Windows**:  https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
 
-**Linux**
- https://docs.mongodb.com/manual/administration/install-on-linux/
+**Linux**: https://docs.mongodb.com/manual/administration/install-on-linux/
 
-**OSX**
- https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
+**OSX**: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/
 
 
 ## 2. Setup Project
 1. Clear changes made last week
 ```
-git reset --hard HEAD
-```
-
-2. Check out a clean week5
-```
-git fetch
-git checkout -fb week5 origin/week5
+git stash
+git checkout -f week4
 git pull
 npm install
 ```
 
-3. Install mongoose
+4. Install some brand new dependencies!
 ```
 npm install mongoose --save
+npm install dotenv --save
 ```
 **Mongoose Documentation:** http://mongoosejs.com/docs/api.html
 
@@ -64,6 +61,31 @@ Mongo is a database.  It is a place to store structured data so that your applic
 Mongoose is an ORM (Object Relational Mapping) tool.  It is used in your application to make the process of querying, inserting, updating, and deleting data in a Mongo database.  In addition, it turns the plain ol' javascript objects you get back from Mongo in to more feature-rich objects for your application to use.
 
 ![Mongoose Diagram](mongoose_diag.png)
+
+## WHAT IS DOTENV?!
+
+Dotenv let's you pull environmant variables from a file in to your application.  
+Environment variables `key=value` pairs that are stored by your operating system.
+
+### WHY, OH WHY ARE WE DOING THIS?!
+You have a username and password for your database. This is sensitive information that you don't want the world to know. BUT you still have to put it in your database somewhere.
+**If you put it in a config file and commit it to your repository, it will be publically viewable on your github page!**
+
+The point is, dotenv lets you create a file called `.env` in your root directory filled with key/value pair.  That file is **NOT** 
+
+
+Environment variables are a good way to accomplish this because 
+1. Create a `.env` file in your root directory
+```
+DB_USERNAME=<db username you created for mlab>
+DB_PASSWORD=<password for the mlab db user>
+```
+
+2. Update your `.gitignore` file so that the `.env` file is NOT committed to your repository by adding the following:
+```
+.env
+```
+
 
 
 ## Create a model using mongoose
