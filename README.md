@@ -2,10 +2,10 @@
 
 **Outline**
 
-2.  Set up Mongo (Go ahead and start on this)
-1.  Set up for week5
-1.  Create a model and seed it with data
-1.  Connect Mongo to our application
+1.  Set up Mongo (Go ahead and start on this)
+2.  Set up for week5
+3.  Create a model and seed it with data
+4.  Connect Mongo to our application
 
 ## 1. Set up Mongo
 
