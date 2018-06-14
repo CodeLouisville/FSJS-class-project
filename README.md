@@ -14,15 +14,16 @@
 1.  Head over to [mLab](https://mlab.com) (https://mlab.com)
 2.  If you have an account, log in, otherwise click on "Sign Up"
 3.  Click on "Create New"
-
-- Any cloud provider will do
-- Make sure you choose the "Sandbox" plan type
-- Click "Continue" at the bottom of the page
-- Answer all remaining questions (region, etc.)
-- Choose a name...could be anything...maybe "fsjs-class-project"
-- Complete setup
-
-4.  Click on your new database in the list and note the connection links provided
+4.  Any cloud provider will do
+5.  Make sure you choose the "Sandbox" plan type
+6.  Click "Continue" at the bottom of the page
+7.  Answer all remaining questions (region, etc.)
+8.  Choose a name...could be anything...maybe "fsjs-class-project"
+9.  Click on the Database
+10. Click on the `Users` tab and create a user
+11. Remember your password for later!
+12. Complete setup
+13. Click on your new database in the list and note the connection links provided
 
 ### Option 2 - Install mongo on your machine
 
@@ -180,8 +181,14 @@ Strategy: On startup, check if there are any files in the database, if not, then
         "title": "Satellite of Love Plans.svg",
         "description": "Includes fix for exhaust port vulnerability"
       },
-      { "title": "Rules of Cribbage.doc", "description": "9th edition" },
-      { "title": "avengers_fanfic.txt", "description": "PRIVATE DO NOT READ" }
+      {
+        "title": "Rules of Cribbage.doc",
+        "description": "9th edition"
+      },
+      {
+        "title": "avengers_fanfic.txt",
+        "description": "PRIVATE DO NOT READ"
+      }
     ]
     ```
 
