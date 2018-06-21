@@ -86,11 +86,11 @@ Great! They work, but they don't do much. Let's change that, one step at a time.
  }
  ```
 
-## jQuery, our POSTing hero
+## Fetch, our POSTing hero
 
 We're going to POST json-formatted data to an endpoint on our server which will do all the hard work.  We already have a `POST /api/file` route, but currently it appends the file data to a static array (remember?  We never changed that).
 
-First, we'll use jquery to POST the data, then we'll fix our POST route.
+First, we'll use fetch to POST the data, then we'll fix our POST route.
 
 1. Add the following to our `submitFileForm` function AFTER we create the fileData object.
   ```javascript
