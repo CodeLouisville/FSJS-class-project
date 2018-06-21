@@ -6,36 +6,26 @@ const mongoose = require('mongoose');
 const FILES = [
   {id: 'a', title: 'cutecat1.jpg', description: 'A cute cat'},
   {id: 'b', title: 'uglycat1.jpg', description: 'Just kidding, all cats are cute'},
-  {id: 'c', title: 'total_recall_poster.jpg', description: 'Quaid, start the reactor...'},
-  {id: 'd', title: 'louisville_coffee.txt', description: 'Coffee shop ratings'},
+  {id: 'c', title: 'plaintext_passwords.txt', description: '12345 - like my luggage'},
+  {id: 'd', title: 'got_S08E01.mp4', description: 'home video of...a cat'},
 ];
 
 
-router.use('/doc', function(req, res, next) {
-  res.end(`Documentation http://expressjs.com/`);
-});
-
 /**
- * Get a list of all files in the DB
+ * C - reate
  */
-router.get('/file', function(req, res, next) {
-  const fileModel = mongoose.model('File');
+router.post('/file', function(req, res, next) {
+  const data = req.body;
+  console.log("POST DATA", data);
 
-  fileModel.find({}, function(err, files) {
-    if (err) {
-      console.log(err);
-      return res.status(500).json(err);
-    }
-  
-    res.json(files);
-  });
+  res.end('Create a new file');
 });
 
 /**
- * Get a single file by passing its id as a URL param
+ * R - ead
  */
 router.get('/file/:fileId', function(req, res, next) {
-  const {fileId} = req.params;
+  const { fileId } = req.params;
   // same as 'const fileId = req.params.fileId'
 
   const file = FILES.find(entry => entry.id === fileId);
@@ -45,33 +35,35 @@ router.get('/file/:fileId', function(req, res, next) {
 
   res.json(file);
 });
-
 /**
- * Create a new file
- */
-router.post('/file', function(req, res, next) {
-  const newId = '' + FILES.length;
-  const data = req.body;
-  data.id = newId;
-
-  FILES.push(data);
-  res.status(201).json(data);
-});
-
-/**
- * Update an existing file
+ * U - pdate
  */
 router.put('/file/:fileId', function(req, res, next) {
+  const data = req.body;
+  console.log("PUT DATA", data);
+
   res.end(`Updating file '${req.params.fileId}'`);
 });
 
 /**
- * Delete a file
+ * D - elete
  */
 router.delete('/file/:fileId', function(req, res, next) {
   res.end(`Deleting file '${req.params.fileId}'`);
 });
-
+/**
+ * ¯\_(ツ)_/¯ - list
+ */
+router.get('/file', function(req, res, next) {
+  mongoose.model('File').find({}, function(err, files) {
+    if (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  
+    res.json(files);
+  });
+  
+});
 
 module.exports = router;
-
