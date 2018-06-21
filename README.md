@@ -97,6 +97,9 @@ First, we'll use jquery to POST the data, then we'll fix our POST route.
   fetch('/api/file', {
     method: 'post',
     body: JSON.stringify(fileData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
     .then(response => response.json())
     .then(file => {
@@ -107,7 +110,7 @@ First, we'll use jquery to POST the data, then we'll fix our POST route.
       console.error("A terrible thing has happened", err);
     }) 
   ```
-  If we refresh the page and test this, it will work, but we won't be updating the displayed list. Remember that we have that static array thing which we've never changed...let's do that now.
+  If we refresh the page and test this, it will NOT work. Why?
 
 
 ## Now, fix the POST route handler
