@@ -3,7 +3,7 @@
 **Outline**
 
 1. Set up for week6
-2. Create a hidable form to add files
+2. Create form to add files
 4. Client-side function to POST a new files
 5. Server-side handler that creates file
 
@@ -12,7 +12,7 @@
 1. Check out a clean week6 branch
 ```
 git stash
-git checkout -f week5
+git checkout -f week6
 git pull
 npm install
 ```
