@@ -55,17 +55,17 @@ function handleEditFileClick() {
 
 This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) fill the form with the data for a specific file.  We need somehow get the File data in to our `handleEditFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
 
-Add a custom attribute called `data-fileId` to the button.  Make the value of that attribute equal to the `_id` field of the file.  Pass the element (using `this`) to the `handleEditFileClick` function and pull the `_id` field from the element.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
+Add a custom attribute called `data-file-id` to the button.  Make the value of that attribute equal to the `_id` field of the file.  Pass the element (using `this`) to the `handleEditFileClick` function and pull the `_id` field from the element.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
 
 3. Pass the `_id` parameter to the funciton
   ```html
-  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-fileId="${file.id}">Edit</button>
+  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-file-id="${file.id}">Edit</button>
   ```
 
   And now `console.log()` the result to show it works
   ```javascript
   function handleEditFileClick(element) {
-    const fileId = element.getAttribute('data-fileId');
+    const fileId = element.getAttribute('data-file-id');
     console.log("I will edit for you", fileId);
   }
   ```
@@ -89,7 +89,7 @@ function refreshFileList() {
 5. In our `onclick` handler, retrieve the file using `Array.find()`
 ```javascript
 function handleEditFileClick(element) {
-  const fileId = element.getAttribute('data-fileId');
+  const fileId = element.getAttribute('data-file-id');
 
   const file = window.fileList.find(file => file._id === fileId);
   if (file) {
@@ -107,7 +107,7 @@ function handleEditFileClick(element) {
 6. Edit the `handleEditFileClick()` function so that it opens the form we created last week.  When clicked, we should also populate the form with the data we wish to edit.
   ```javascript
   function handleEditFileClick(element) {
-    const fileId = element.getAttribute('data-fileId');
+    const fileId = element.getAttribute('data-file-id');
 
     const file = window.fileList.find(file => file._id === fileId);
     if (file) {
@@ -126,7 +126,7 @@ function handleEditFileClick(element) {
 
   ```javascript
   function handleEditFileClick(element) {
-    const fileId = element.getAttribute('data-fileId');
+    const fileId = element.getAttribute('data-file-id');
 
     const file = window.fileList.find(file => file._id === fileId);
     if (file) {
@@ -174,7 +174,7 @@ If we don't pass anything to setForm, all the fields get empty strings.  If we p
 ...in `handleEdifFileClick`
 ```javascript
 function handleEditFileClick(element) {
-    const fileId = element.getAttribute('data-fileId');
+    const fileId = element.getAttribute('data-file-id');
 
     const file = window.fileList.find(file => file._id === fileId);
     if (file) {
