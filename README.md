@@ -9,45 +9,43 @@
 
 
 ## 1. Setup Project
-1. Clear changes made last week
 ```
-git reset --hard HEAD
-git clean -f
-```
-
-2. Check out a clean week7 branch
-```
-git fetch
-git checkout -fb week7 origin/week7
+git stash
+git checkout -f week7
 git pull
 npm install
 ```
 
 **Strategy:**
 * A User will visit the site and see an edit button beside each file.
-* Clicking on this button will cause a form (previously not visible) to appear.
-* This will be the same form that adds a new File.
-* That form will have all the current information for the selected file
+* Clicking on this button will cause the Add File form to be populated with the file data
 * Our user will use that form to edit the existing File.
 * The `Submit` button will trigger a javascript function that grabs the data from the form and PUTs it to an API endpoint
 * After PUTting the data and receiving a response, the page will refresh the list of Files.
 
 ## 2. Add an edit button to each item.
 
-1. Open `public/index.html` and find the `#list-template` handlebars template we use to render the list of files.  Add a button to each item.
-```html
-<li class="list-group-item">
-  <strong>{{title}}</strong> - {{description}}
-  <span class="pull-right">
-    <button type="button" class="btn btn-xs btn-default">Edit</button>
-  </span>
-</li>
+1. We need to edit the template that outputs each file item.  Open `public/js/app.js` and edit the template found in the `renderFiles` function. Add a button to each item.
+```javascript
+function renderFiles(files) {
+  const listItems = files.map(file => `
+    <li class="list-group-item">
+      <strong>${file.title}</strong> - ${file.description}
+      <span class="pull-right">
+        <button type="button" class="btn btn-xs btn-default">Edit</button>
+      </span>
+    </li>`);
+  const html = `<ul class="list-group">${listItems.join('')}</ul>`;
+
+  return html;
+}
 ```
 
 2. Add some functionality to that button.  Add an `onclick` event handler and its corresponding function.
 ```html
 <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick()">Edit</button>
 ```
+
 And the function goes in `/public/js/app.js`
 ```javascript
 function handleEditFileClick() {
@@ -55,18 +53,20 @@ function handleEditFileClick() {
 }
 ```
 
-This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) open a form with the data for a specific file.  We need somehow get the File data in to our `handleEditFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
+This works, but every 'Edit' does the exact same thing when clicked.  We want a click to (eventually) fill the form with the data for a specific file.  We need somehow get the File data in to our `handleEditFileClick()` function.  There are dozens of ways of accomplishing this.  Here's a straight-forward method:  
 
-Pass the unique File `_id` field to our function in the `onclick` event handler.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
+Add a custom attribute called `data-fileId` to the button.  Make the value of that attribute equal to the `_id` field of the file.  Pass the element (using `this`) to the `handleEditFileClick` function and pull the `_id` field from the element.  Then use that id to find the File in an array.  We'll need to make sure we have an array of File objects available.
 
 3. Pass the `_id` parameter to the funciton
   ```html
-  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick('{{_id}}')">Edit</button>
+  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-fileId="${file.id}">Edit</button>
   ```
+
   And now `console.log()` the result to show it works
   ```javascript
-  function handleEditFileClick(id) {
-    console.log("I will edit for you", id);
+  function handleEditFileClick(element) {
+    const fileId = element.getAttribute('data-fileId');
+    console.log("I will edit for you", fileId);
   }
   ```
 
@@ -75,29 +75,27 @@ Pass the unique File `_id` field to our function in the `onclick` event handler.
 4. Whenever we refresh the list of Files (remember our AJAX call), save that array to a property on the global `window` object.  This is done in `refreshFileList()`
 ```javascript
 function refreshFileList() {
-  const template = $('#list-template').html();
-  const compiledTemplate = Handlebars.compile(template);
-
   getFiles()
     .then(files => {
 
       window.fileList = files;
 
-      const data = {files: files};
-      const html = compiledTemplate(data);
+      const html = renderFiles(files);
       $('#list-container').html(html);
-    })
+    });
 }
 ```
 
 5. In our `onclick` handler, retrieve the file using `Array.find()`
 ```javascript
-function handleEditFileClick(id) {
-  const file = window.fileList.find(file => file._id === id);
+function handleEditFileClick(element) {
+  const fileId = element.getAttribute('data-fileId');
+
+  const file = window.fileList.find(file => file._id === fileId);
   if (file) {
     console.log("I will edit you!", file);
   } else {
-    console.log("Aw shucks, I didn't find", id)
+    console.log("Aw shucks, I didn't find", fileId)
   }
 }
 ```
@@ -108,12 +106,13 @@ function handleEditFileClick(id) {
 
 6. Edit the `handleEditFileClick()` function so that it opens the form we created last week.  When clicked, we should also populate the form with the data we wish to edit.
   ```javascript
-  function handleEditFileClick(id) {
-    const file = window.fileList.find(file => file._id === id);
+  function handleEditFileClick(element) {
+    const fileId = element.getAttribute('data-fileId');
+
+    const file = window.fileList.find(file => file._id === fileId);
     if (file) {
       $('#file-title').val(file.title);
       $('#file-description').val(file.description);
-      toggleAddFileFormVisibility();
     }
   }
   ```
@@ -126,51 +125,144 @@ function handleEditFileClick(id) {
   ```
 
   ```javascript
-  function handleEditFileClick(id) {
-    const file = window.fileList.find(file => file._id === id);
+  function handleEditFileClick(element) {
+    const fileId = element.getAttribute('data-fileId');
+
+    const file = window.fileList.find(file => file._id === fileId);
     if (file) {
       $('#file-title').val(file.title);
       $('#file-description').val(file.description);
       $('#file-id').val(file._id);
-      toggleAddFileFormVisibility();
     }
   }
   ```
 
-8. Problem, what if we click `Edit`, close the form and then try to add a new File? When we click `Add File` we expect to see a blank form, but instead we see data from the previously edited File.  Since we are reusing this form, we need a way to clear the data.  Let's pull all the logic for setting a form's data out in to it's own function.
-  ```javascript
-  function setFormData(data) {
-    data = data || {};
+## Two quick problems
 
-    const file = {
-      title: data.title || '',
-      description: data.description || '',
-      _id: data._id || '',
-    };
+1. We forgot to add the ability to clear the form
+2. We can't really tell if we are adding or editing a file
 
-    $('#file-title').val(file.title);
-    $('#file-description').val(file.description);
-    $('#file-id').val(file._id);
-  }
-  ```
-  Now, we use that function in `handleEditFileClick()` and `handleAddFileClick()`
+We can solve the first problem by setting all the form fields to blank.
+```javascript
+function setForm() {
+  $('#file-title').val('');
+  $('#file-description').val('');
+  $('#file-id').val('');
+}
+```
 
-  ```javascript
-  function handleAddFileClick() {
-    console.log("Baby steps...");
-    setFormData({});
-    toggleAddFileFormVisibility();
-  }
-  ```
-  ```javascript
-  function handleEditFileClick(id) {
-    const file = window.fileList.find(file => file._id === id);
+**BUT WAIT!**
+That looks remarkably like the code we used in `handleEditFileClick()`.  With a small change, we can reuse this function:
+```javascript
+function setForm(data) {
+  data = data || {};
+
+  const file = {
+    title: data.title || '',
+    description: data.description || '',
+    _id: data._id || '',
+  };
+
+  $('#file-title').val(file.title);
+  $('#file-description').val(file.description);
+  $('#file-id').val(file._id);
+}
+```
+
+If we don't pass anything to setForm, all the fields get empty strings.  If we pass a file to the function, then the form gets populated.  Now we can use that...
+
+...in `handleEdifFileClick`
+```javascript
+function handleEditFileClick(element) {
+    const fileId = element.getAttribute('data-fileId');
+
+    const file = window.fileList.find(file => file._id === fileId);
     if (file) {
-      setFormData(file);
-      toggleAddFileFormVisibility();
+      setForm(file)
     }
   }
-  ```
+```
+
+... in `cancelFileForm`
+```javascript
+function cancelFileForm() {
+  setForm();
+}
+```
+
+...in `submitFileForm` (to clear the data when we are done)
+```javascript
+function submitFileForm() {
+  console.log("You clicked 'submit'. Congratulations.");
+ 
+  const fileData = {
+    title: $('#file-title').val(),
+    description: $('#file-description').val(),
+  };
+ 
+  fetch('/api/file', {
+    method: 'post',
+    body: JSON.stringify(fileData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => response.json())
+    .then(file => {
+      console.log("we have posted the data", file);
+      setForm();
+      refreshFileList();
+    })
+    .catch(err => {
+      console.error("A terrible thing has happened", err);
+    }) 
+}
+```
+
+...and just to be complete, set the form on page load:
+```javascript
+$(document).ready(function () {
+  refreshFileList();
+  setForm();
+});
+```
+
+But what about the second problem?  Hey, we gotta solution for that too.  
+
+**Strategy:**
+Every time the form is set, check if there is an `_id` field.  
+If yes, then the form is editing.  If no, then the form is adding. 
+Change the form legend accordingly.
+
+1. Add an `id` field to the legend element
+```html
+<legend id="form-label">File</legend>
+```
+
+2. Add a little logic to `setForm` the set the legend text
+```javascript
+function setForm(data) {
+  data = data || {};
+
+  const file = {
+    title: data.title || '',
+    description: data.description || '',
+    _id: data._id || '',
+  };
+
+  $('#file-title').val(file.title);
+  $('#file-description').val(file.description);
+  $('#file-id').val(file._id);
+
+  if (file._id) {
+    $('#form-label').text("Edit File");
+  } else {
+    $('#form-label').text("Add File");
+  }
+}
+```
+
+Voila.
 
 ## Push our changes to the server.
 
@@ -179,45 +271,44 @@ function handleEditFileClick(id) {
   We can accomplish this by checking to see if `#file-id` has a value.  If it does, we are editing, if it doesn't we are creating.
 
 1. In `submitFileForm()` get the `#file-id` value and check if we are PUTting or POSTing
-  ```javascript
-  function submitFileForm() {
-    console.log("You clicked 'submit'. Congratulations.");
+```javascript
+function submitFileForm() {
+  console.log("You clicked 'submit'. Congratulations.");
+ 
+  const fileData = {
+    title: $('#file-title').val(),
+    description: $('#file-description').val(),
+    _id: $('#file-id').val(),
+  };
 
-    const fileData = {
-      title: $('#file-title').val(),
-      description: $('#file-description').val(),
-      _id: $('#file-id').val(),
-    };
-
-    let method, url;
-    if (fileData._id) {
-      method = 'PUT';
-      url = '/api/file/' + fileData._id;
-    } else {
-      method = 'POST';
-      url = '/api/file';
-    }
-
-    $.ajax({
-      type: method,
-      url: url,
-      data: JSON.stringify(fileData),
-      dataType: 'json',
-      contentType : 'application/json',
-    })
-      .done(function(response) {
-        console.log("We have posted the data");
-        refreshFileList();
-        toggleAddFileFormVisibility();
-      })
-      .fail(function(error) {
-        console.log("Failures at posting, we are", error);
-      })
-
-    console.log("Your file data", fileData);
+  let method, url;
+  if (fileData._id) {
+    method = 'PUT';
+    url = '/api/file/' + fileData._id;
+  } else {
+    method = 'POST';
+    url = '/api/file';
   }
-  ```
-  That should do it, but when we try to submit an error, we get a 404 response.  We have to create the PUT endpoint.
+ 
+  fetch(url, {
+    method: method,
+    body: JSON.stringify(fileData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => response.json())
+    .then(file => {
+      console.log("we have updated the data", file);
+      setForm();
+      refreshFileList();
+    })
+    .catch(err => {
+      console.error("A terrible thing has happened", err);
+    }) 
+}
+```
+That should do it, but when we try it, we get an error.  Why?
 
 
 ## Handle that PUT
