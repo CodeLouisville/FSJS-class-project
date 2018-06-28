@@ -59,7 +59,7 @@ Add a custom attribute called `data-file-id` to the button.  Make the value of t
 
 3. Pass the `_id` parameter to the funciton
   ```html
-  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-file-id="${file.id}">Edit</button>
+  <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-file-id="${file._id}">Edit</button>
   ```
 
   And now `console.log()` the result to show it works
