@@ -10,16 +10,11 @@
 
 
 ## 1. Setup Project
-1. Clear changes made last week
-```
-git reset --hard HEAD
-git clean -f
-```
 
-2. Check out a clean week8 branch
+**Check out a clean week8 branch**
 ```
-git fetch
-git checkout -fb week8 origin/week8
+git stash
+git checkout -f week8
 git pull
 npm install
 ```
@@ -96,49 +91,56 @@ How would you implement an `undelete` operation?
 
 2. Now make it do something by adding an `onclick` handler (we can copy/paste from the "Edit" button and then change it to suit our needs):
 ```html
-<button type="button" class="btn btn-xs btn-danger" onclick="handleDeleteFileClick('{{_id}}')">Del</button>
+<button type="button" class="btn btn-xs btn-danger" onclick="handleDeleteFileClick(this)" data-file-id="${file._id}">Del</button>
 ```
 
 3. Create the `handleDeleteFileClick()` function in `public/js/app.js`:
 ```javascript
-function handleDeleteFileClick(id) {
-  console.log("File", id, "is DOOMED!!!!!!");
+function handleDeleteFileClick(element) {
+  const fileId = element.getAttribute('data-file-id');
+
+  console.log("File", fileId, "is DOOMED!!!!!!");
 }
 ```
 
 4. Er....maybe we should ask for confirmation before doing this:
 ```javascript
-function handleDeleteFileClick(id) {
+function handleDeleteFileClick(element) {
+  const fileId = element.getAttribute('data-file-id');
+
   if (confirm("Are you sure?")) {
-    console.log("File", id, "is DOOMED!!!!!!");
+    console.log("File", fileId, "is DOOMED!!!!!!");
   }
 }
 ```
 
 5. Much better.  Now instead of logging out a message, let's send an ajax `DELETE` message to `/file/:fileId` to have the file deleted:
 ```javascript
-function handleDeleteFileClick(id) {
-  if (confirm("Are you sure?")) {
-    deleteFile(id);
+function handleDeleteFileClick(element) {
+  const fileId = element.getAttribute('data-file-id');
+
+if (confirm("Are you sure?")) {
+    deleteFile(fileId);
   }
 }
 ```
 
 6. Aaaaand we'll create that function (We can look at `submitFileForm()` to remind ourselves how to do it):
 ```javascript
-function deleteFile(id) {
-  $.ajax({
-    type: 'DELETE',
-    url: '/api/file/' + id,
-    dataType: 'json',
-    contentType : 'application/json',
+function deleteFile(fileId) {
+  const url = '/api/file/' + fileId;
+
+  fetch(url, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
   })
-    .done(function(response) {
-      console.log("File", id, "is DOOMED!!!!!!");
+    .then(response => response.json())
+    .then(response => {
+      console.log("DOOOOOOOOOM!!!!!");
       refreshFileList();
     })
-    .fail(function(error) {
-      console.log("I'm not dead yet!", error);
-    })
+    .catch(err => {
+      console.error("I'm not dead yet!", err);
+    });
 }
 ```
