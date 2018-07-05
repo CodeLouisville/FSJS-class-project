@@ -1,44 +1,51 @@
-
+/**
+ * Fetches data from the api
+ */
 function getFiles() {
-  return $.ajax('/api/file')
-    .then(res => {
-      console.log("Results from getFiles()", res);
-      return res;
+  return fetch('/api/file')
+    .then(response => response.json())
+    .then(files => {
+      console.log("Files, I got them:", files);
+      return files;
     })
-    .fail(err => {
-      console.error("Error in getFiles()", err);
-      throw err;
-    });
+    .catch(error => console.error("GETFILES:", error));
 }
 
-function refreshFileList() {
-  const template = $('#list-template').html();
-  const compiledTemplate = Handlebars.compile(template);
+/**
+ * Render a list of files
+ */
+function renderFiles(files) {
+  const listItems = files.map(file => `
+    <li class="list-group-item">
+      <strong>${file.title}</strong> - ${file.description}
+      <span class="pull-right">
+        <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick(this)" data-file-id="${file._id}">Edit</button>
+      </span>
+    </li>`);
+  const html = `<ul class="list-group">${listItems.join('')}</ul>`;
 
+  return html;
+}
+
+
+/**
+ * Fetch files from the API and render to the page
+ */
+function refreshFileList() {
   getFiles()
     .then(files => {
 
       window.fileList = files;
 
-      const data = {files: files};
-      const html = compiledTemplate(data);
+      const html = renderFiles(files);
       $('#list-container').html(html);
-    })
+    });
 }
 
-function handleAddFileClick() {
-  console.log("Baby steps...");
-  setFormData({});
-  toggleAddFileFormVisibility();
-}
-
-function toggleAddFileFormVisibility() {
-  $('#form-container').toggleClass('hidden');
-}
 
 function submitFileForm() {
   console.log("You clicked 'submit'. Congratulations.");
-
+ 
   const fileData = {
     title: $('#file-title').val(),
     description: $('#file-description').val(),
@@ -53,40 +60,43 @@ function submitFileForm() {
     method = 'POST';
     url = '/api/file';
   }
-
-  $.ajax({
-    type: method,
-    url: url,
-    data: JSON.stringify(fileData),
-    dataType: 'json',
-    contentType : 'application/json',
+ 
+  fetch(url, {
+    method: method,
+    body: JSON.stringify(fileData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
   })
-    .done(function(response) {
-      console.log("We have posted the data");
+    .then(response => response.json())
+    .then(file => {
+      console.log("we have updated the data", file);
+      setForm();
       refreshFileList();
-      toggleAddFileFormVisibility();
     })
-    .fail(function(error) {
-      console.log("Failures at posting, we are", error);
-    })
-
-  console.log("Your file data", fileData);
+    .catch(err => {
+      console.error("A terrible thing has happened", err);
+    }) 
 }
+
+ 
 
 function cancelFileForm() {
-  toggleAddFileFormVisibility();
+  setForm();
 }
+  
 
-function handleEditFileClick(id) {
-  const file = window.fileList.find(file => file._id === id);
+function handleEditFileClick(element) {
+  const fileId = element.getAttribute('data-file-id');
+
+  const file = window.fileList.find(file => file._id === fileId);
   if (file) {
-    setFormData(file);
-    toggleAddFileFormVisibility();
+    setForm(file)
   }
 }
 
 
-function setFormData(data) {
+function setForm(data) {
   data = data || {};
 
   const file = {
@@ -98,8 +108,10 @@ function setFormData(data) {
   $('#file-title').val(file.title);
   $('#file-description').val(file.description);
   $('#file-id').val(file._id);
+
+  if (file._id) {
+    $('#form-label').text("Edit File");
+  } else {
+    $('#form-label').text("Add File");
+  }
 }
-
-
-
-refreshFileList();

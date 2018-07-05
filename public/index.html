@@ -5,16 +5,18 @@
     <title>Our Glorious Node Project</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
   </head>
+  
   <body>
     <div class="container">
       <h1>A wild webpage appears...</h1>
   
       <div id="list-container"></div>
 
-      <button id="add-file-button" class="btn btn-primary" onclick="handleAddFileClick()">Add File</button>
-      <div id="form-container" class="panel hidden">
+      <div id="form-container" class="panel">
         <form id="add-file-form">
           <input type="hidden" id="file-id" value="" />
+          
+          <legend id="form-label">File</legend>
           <div class="form-group">
             <label for="file-title">Title</label>
             <input type="text" class="form-control" id="file-title" placeholder="Title">
@@ -28,25 +30,15 @@
         </form>
       </div>
     </div>
-
-
-
-    <script id="list-template" type="text/x-handlebars-template">
-      <ul class="list-group">
-        {{#each files}}
-        <li class="list-group-item">
-          <strong>{{title}}</strong> - {{description}}
-          <span class="pull-right">
-            <button type="button" class="btn btn-xs btn-default" onclick="handleEditFileClick('{{_id}}')">Edit</button>
-          </span>
-        </li>
-        {{/each}}
-      </ul>
-    </script>
-    
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.8/handlebars.min.js"></script>
     <script src="/js/app.js"></script>
-
+    <script>
+      $(document).ready(function () {
+        refreshFileList();
+        setForm();
+      });
+    </script>
+  
   </body>
 </html>
